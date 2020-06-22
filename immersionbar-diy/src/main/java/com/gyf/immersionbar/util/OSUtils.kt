@@ -1,4 +1,4 @@
-package com.gyf.immersionbar
+package com.gyf.immersionbar.util
 
 import android.annotation.SuppressLint
 
