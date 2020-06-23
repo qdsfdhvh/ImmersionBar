@@ -92,31 +92,23 @@ fun Activity.getNavigationBarWidth(): Int {
  * 界面中是否有导航栏
  */
 fun Activity.hasNavigationBar(): Boolean {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        // 判断小米手机是否开启了全面屏，开启了，直接返回false
-        if (getGlobalBool(MIUI_NAVIGATION_BAR_HIDE_SHOW)) {
-            return false
-        }
-        // 判断华为手机是否隐藏了导航栏，隐藏了，直接返回false
-        if (isEMUI() && getGlobalBool(EMUI_NAVIGATION_BAR_HIDE_SHOW)) {
-            return false
-        }
+    // 判断小米手机是否开启了全面屏，开启了，直接返回false
+    if (getGlobalBool(MIUI_NAVIGATION_BAR_HIDE_SHOW)) {
+        return false
+    }
+    // 判断华为手机是否隐藏了导航栏，隐藏了，直接返回false
+    if (isEMUI() && getGlobalBool(EMUI_NAVIGATION_BAR_HIDE_SHOW)) {
+        return false
     }
 
     // 其他手机根据屏幕真实高度与显示高度是否相同来判断
     val wm = windowManager
     val display = wm.defaultDisplay
 
-    val realWidth: Int; val realHeight: Int
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-        val realDisplayMetrics = DisplayMetrics()
-        display.getRealMetrics(realDisplayMetrics)
-        realWidth  = realDisplayMetrics.widthPixels
-        realHeight = realDisplayMetrics.heightPixels
-    } else {
-        realWidth  = 0
-        realHeight = 0
-    }
+    val realDisplayMetrics = DisplayMetrics()
+    display.getRealMetrics(realDisplayMetrics)
+    val realWidth  = realDisplayMetrics.widthPixels
+    val realHeight = realDisplayMetrics.heightPixels
 
     val displayMetrics = DisplayMetrics()
     display.getMetrics(displayMetrics)
@@ -126,7 +118,6 @@ fun Activity.hasNavigationBar(): Boolean {
     return (realWidth - displayWidth) > 0 || (realHeight - displayHeight) > 0
 }
 
-@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 private fun Activity.getGlobalBool(key: String): Boolean {
     return Settings.Global.getInt(contentResolver, key) != 0
 }
