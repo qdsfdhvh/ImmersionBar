@@ -10,7 +10,8 @@ import com.gyf.immersionbar.annotation.BarHide
 import com.gyf.immersionbar.annotation.FitsFlag
 import com.gyf.immersionbar.util.isEMUI3x
 
-private const val DEFAULT_KEYBOARD_MODE = (WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN
+private const val DEFAULT_KEYBOARD_MODE = (
+    WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN
     or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 
 data class BarConfig(
@@ -98,52 +99,37 @@ data class BarConfig(
 ) {
 
     class Builder {
-
         private var statusBarColor: Int = Color.TRANSPARENT
         private var statusBarColorTransform: Int = Color.BLACK
         private var statusBarAlpha: Float = 0.0f
-
         private var navigationBarColor: Int = Color.BLACK
         private var navigationBarColorTransform: Int = Color.BLACK
         private var navigationBarAlpha: Float = 0.0f
-
         private var fullScreen: Boolean = false
-
         private var autoStatusBarDarkModeEnable: Boolean = false
         private var autoStatusBarDarkModeAlpha: Float = 1.0f
         private var autoNavigationBarDarkModeEnable: Boolean = false
         private var autoNavigationBarDarkModeAlpha: Float = 1.0f
-
         private var statusBarDarkFont: Boolean = false
         private var navigationBarDarkIcon: Boolean = false
-
         private var flymeOSStatusBarFontColor: Int = 0
-
         private var barHideCode: Int = BarHide.FLAG_SHOW_BAR
         private var hideNavigationBar: Boolean = false
-
         private var fits: Boolean = false
         private var fitsStatusBarType: Int = FitsFlag.DEFAULT
-
         private var contentColor: Int = Color.TRANSPARENT
         private var contentColorTransform: Int = Color.BLACK
         private var contentAlpha: Float = 0.0f
-
         private var fitsLayoutOverlapEnable: Boolean = true
-
         private var statusView: View? = null
         private var titleBarView: View? = null
         private var statusBarColorEnabled: Boolean = true
-
         private var isSupportActionBar: Boolean = false
-
         private var keyboardEnable: Boolean = false
         private var keyboardMode: Int = DEFAULT_KEYBOARD_MODE
-
         private var navigationBarEnable: Boolean = true
         private var navigationBarWithKitkatEnable: Boolean = true
         private var navigationBarWithEMUI3Enable: Boolean = true
-
         private var viewAlpha: Float = 0.0f
         private var viewMap: HashMap<View, Pair<Int, Int>>? = null
 

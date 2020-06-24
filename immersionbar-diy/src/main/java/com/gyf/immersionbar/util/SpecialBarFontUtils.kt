@@ -31,7 +31,8 @@ private val mSetStatusBarDarkIcon: Method? by lazy {
 
 private val mStatusBarColorField: Field? by lazy {
     try {
-        WindowManager.LayoutParams::class.java.getField("statusBarColor")
+        WindowManager.LayoutParams::class.java.getField(
+            "statusBarColor")
     } catch (ignored: NoSuchMethodException) {
         null
     }
@@ -39,7 +40,8 @@ private val mStatusBarColorField: Field? by lazy {
 
 private val SYSTEM_UI_FLAG_LIGHT_STATUS_BAR: Int by lazy {
     try {
-        val field = View::class.java.getField("SYSTEM_UI_FLAG_LIGHT_STATUS_BAR")
+        val field = View::class.java.getField(
+            "SYSTEM_UI_FLAG_LIGHT_STATUS_BAR")
         field.getInt(null)
     } catch (ignored: NoSuchFieldException) {
         0
@@ -129,8 +131,7 @@ internal fun Activity.setStatusBarDarkIcon(isDark: Boolean, flag: Boolean = true
  */
 private fun setStatusBarDarkIcon(window: Window, isDark: Boolean) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-        changeMeizuFlag(window.attributes,
-            "MEIZU_FLAG_DARK_STATUS_BAR_ICON", isDark)
+        changeMeizuFlag(window.attributes, isDark)
     } else {
         setStatusBarDarkIcon(window.decorView, isDark)
         setStatusBarColor(window, 0)
@@ -173,11 +174,11 @@ private fun setStatusBarColor(window: Window, @ColorInt color: Int) {
 
 private fun changeMeizuFlag(
     winParams: WindowManager.LayoutParams,
-    flagName: String,
     dark: Boolean
 ): Boolean {
     try {
-        val f = winParams.javaClass.getDeclaredField(flagName)
+        val f = winParams.javaClass.getDeclaredField(
+            "MEIZU_FLAG_DARK_STATUS_BAR_ICON")
         f.isAccessible = true
         val bits = f.getInt(winParams)
         val f2 = winParams.javaClass.getDeclaredField("meizuFlags")
@@ -208,21 +209,21 @@ private fun changeMeizuFlag(
 /**
  * MIUI 状态栏&导航栏 字体黑色与白色标识位
  */
-private const val IMMERSION_MIUI_STATUS_BAR_DARK = "EXTRA_FLAG_STATUS_BAR_DARK_MODE"
-private const val IMMERSION_MIUI_NAVIGATION_BAR_DARK = "EXTRA_FLAG_NAVIGATION_BAR_DARK_MODE"
+private const val MIUI_STATUS_BAR_DARK = "EXTRA_FLAG_STATUS_BAR_DARK_MODE"
+private const val MIUI_NAVIGATION_BAR_DARK = "EXTRA_FLAG_NAVIGATION_BAR_DARK_MODE"
 
 /**
  * 设置MIUI状态栏颜色
  */
 internal fun Window.setStatusBarDarkWithMIUI(isDark: Boolean) {
-    setMIUIBarDark(this, IMMERSION_MIUI_STATUS_BAR_DARK, isDark)
+    setMIUIBarDark(this, MIUI_STATUS_BAR_DARK, isDark)
 }
 
 /**
  * 设置MIUI导航栏栏颜色
  */
 internal fun Window.setNavigationBarDarkWithMIUI(isDark: Boolean) {
-    setMIUIBarDark(this, IMMERSION_MIUI_NAVIGATION_BAR_DARK, isDark)
+    setMIUIBarDark(this, MIUI_NAVIGATION_BAR_DARK, isDark)
 }
 
 @SuppressLint("PrivateApi")
@@ -230,7 +231,8 @@ private fun setMIUIBarDark(window: Window, key: String, isDark: Boolean) {
     val clazz: Class<out Window> = window.javaClass
     try {
         val darkModeFlag: Int
-        val layoutParams = Class.forName("android.view.MiuiWindowManager\$LayoutParams")
+        val layoutParams = Class.forName(
+            "android.view.MiuiWindowManager\$LayoutParams")
         val field = layoutParams.getField(key)
         darkModeFlag = field.getInt(layoutParams)
         val extraFlagField = clazz.getMethod("setExtraFlags",

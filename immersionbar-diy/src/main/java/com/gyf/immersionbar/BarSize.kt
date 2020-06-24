@@ -22,7 +22,7 @@ class BarSize private constructor(
 
     companion object {
         @JvmStatic
-        fun create(activity: Activity): BarSize {
+        internal fun create(activity: Activity): BarSize {
             return BarSize(
                 statusBarHeight = activity.getStatusBarHeight(),
                 actionBarHeight = activity.getActionBarHeight(),

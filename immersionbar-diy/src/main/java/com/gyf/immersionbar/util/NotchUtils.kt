@@ -3,7 +3,6 @@ package com.gyf.immersionbar.util
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.res.Configuration
 import android.os.Build
 import android.util.TypedValue
 import android.view.DisplayCutout
@@ -55,7 +54,7 @@ internal fun Window.fitsNotchScreen() {
 /**
  * 判断是否是刘海屏
  */
-fun Activity.hasNotchScreen(): Boolean {
+internal fun Activity.hasNotchScreen(): Boolean {
     return hasNotchAtXiaoMi()
             || hasNotchAtHuaWei()
             || hasNotchAtOPPO()
@@ -66,7 +65,7 @@ fun Activity.hasNotchScreen(): Boolean {
 /**
  * 判断是否是刘海屏
  */
-fun View.hasNotchScreen(): Boolean {
+internal fun View.hasNotchScreen(): Boolean {
     return context.hasNotchAtXiaoMi()
             || context.hasNotchAtHuaWei()
             || context.hasNotchAtOPPO()
@@ -77,11 +76,12 @@ fun View.hasNotchScreen(): Boolean {
 /**
  * 获得刘海屏高度
  */
+@SuppressLint("NewApi")
 internal fun Activity.getNotchHeight(): Int {
     val displayCutout = getDisplayCutout()
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && displayCutout != null) {
+    if (isPLater && displayCutout != null) {
         return when {
-            resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT -> {
+            isPortrait() -> {
                 displayCutout.safeInsetTop
             }
             displayCutout.safeInsetLeft == 0 -> {
@@ -141,7 +141,8 @@ private fun View.getDisplayCutout(): DisplayCutout? {
  * Gets xiao mi notch height
  */
 private fun Context.getXiaoMiNotchHeight(): Int {
-    val resourceId = resources.getIdentifier("notch_height", "dimen", "android")
+    val resourceId = resources.getIdentifier(
+        "notch_height", "dimen", "android")
     if (resourceId > 0) {
         return resources.getDimensionPixelSize(resourceId)
     }
@@ -152,15 +153,12 @@ private fun Context.getXiaoMiNotchHeight(): Int {
  * Get hua wei notch size int [ ].
  */
 private fun Context.getHuaWeiNotchSize(): IntArray {
-    try {
-        val clz = classLoader.loadClass("com.huawei.android.util.HwNotchSizeUtil")
+    return classUse(intArrayOf(0, 0)) {
+        val clz = classLoader.loadClass(
+            "com.huawei.android.util.HwNotchSizeUtil")
         val get = clz.getMethod("getNotchSize")
-        return get.invoke(clz) as IntArray
-    } catch (ignored: ClassNotFoundException) {
-    } catch (ignored: NoSuchMethodException) {
-    } catch (ignored: Exception) {
+        get.invoke(clz) as IntArray
     }
-    return intArrayOf(0, 0)
 }
 
 /**
@@ -168,14 +166,12 @@ private fun Context.getHuaWeiNotchSize(): IntArray {
  */
 private fun Context.hasNotchAtXiaoMi(): Boolean {
     if ("Xiaomi" == Build.MANUFACTURER) {
-        try {
+        return classUse(false) {
             @SuppressLint("PrivateApi")
             val clz = classLoader.loadClass(SYSTEM_PROPERTIES)
-            val method = clz.getMethod("getInt", String::class.java, Int::class.java)
-            return method.invoke(clz, NOTCH_XIAO_MI, 0) as Int == 1
-        } catch (ignored: ClassNotFoundException) {
-        } catch (ignored: NoSuchMethodException) {
-        } catch (ignored: Exception) {
+            val method = clz.getMethod("getInt",
+                String::class.java, Int::class.java)
+            method.invoke(clz, NOTCH_XIAO_MI, 0) as Int == 1
         }
     }
     return false
@@ -185,32 +181,24 @@ private fun Context.hasNotchAtXiaoMi(): Boolean {
  * 华为刘海屏判断
  */
 private fun Context.hasNotchAtHuaWei(): Boolean {
-    try {
+    return classUse(false) {
         @SuppressLint("PrivateApi")
         val clz = classLoader.loadClass(NOTCH_HUA_WEI)
         val method = clz.getMethod("hasNotchInScreen")
-        return method.invoke(clz, 0x00000020) as Boolean
-    } catch (ignored: ClassNotFoundException) {
-    } catch (ignored: NoSuchMethodException) {
-    } catch (ignored: Exception) {
+        method.invoke(clz, 0x00000020) as Boolean
     }
-    return false
 }
 
 /**
  * VIVO刘海屏判断
  */
 private fun Context.hasNotchAtVIVO(): Boolean {
-    try {
+    return classUse(false) {
         @SuppressLint("PrivateApi")
         val clz = classLoader.loadClass(NOTCH_VIVO)
         val method = clz.getMethod("isFeatureSupport", Int::class.java)
-        return method.invoke(clz, 0x00000020) as Boolean
-    } catch (ignored: ClassNotFoundException) {
-    } catch (ignored: NoSuchMethodException) {
-    } catch (ignored: Exception) {
+        method.invoke(clz, 0x00000020) as Boolean
     }
-    return false
 }
 
 /**
@@ -231,4 +219,14 @@ private fun Float.dp2px(context: Context): Int {
     return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP, this,
             context.resources.displayMetrics).toInt()
+}
+
+private fun <R> classUse(default: R, block: () -> R): R {
+    try {
+        return block()
+    } catch (ignored: ClassNotFoundException) {
+    } catch (ignored: NoSuchMethodException) {
+    } catch (ignored: Exception) {
+    }
+    return default
 }

@@ -3,13 +3,14 @@ package com.gyf.immersionbar.util
 import android.annotation.TargetApi
 import android.app.Activity
 import android.content.Context
-import android.content.res.Configuration
 import android.content.res.Resources
 import android.os.Build
 import android.provider.Settings
 import android.util.DisplayMetrics
 import android.util.TypedValue
 import android.view.View
+import android.view.ViewGroup
+import androidx.annotation.IntRange
 import com.gyf.immersionbar.diy.R
 
 /**
@@ -25,10 +26,86 @@ private const val NAVIGATION_BAR_HEIGHT = "navigation_bar_height"
 private const val NAVIGATION_BAR_HEIGHT_LANDSCAPE = "navigation_bar_height_landscape"
 
 /**
- * 界面当前是否为竖屏
+ * view 设置高度时的tag标记
  */
-fun Activity.isPortrait(): Boolean {
-    return resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+private const val IMMERSION_FITS_LAYOUT_OVERLAP  = 0x111
+
+/**
+ * 为 自定义标题栏 paddingTop和高度 增加fixHeight
+ */
+fun setTitleBar(@IntRange(from = 0) fixHeight: Int, vararg views: View) {
+    views.filter { v ->
+        v.getTag(IMMERSION_FITS_LAYOUT_OVERLAP) as? Int ?: 0 != fixHeight
+    }.forEach {  v ->
+        v.setTag(IMMERSION_FITS_LAYOUT_OVERLAP, fixHeight)
+        val lp = v.layoutParams ?: ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+
+        if (lp.height == ViewGroup.LayoutParams.WRAP_CONTENT
+            || lp.height == ViewGroup.LayoutParams.MATCH_PARENT
+        ) {
+            v.post {
+                lp.height = v.height + fixHeight
+                v.setPadding(
+                    v.paddingLeft,
+                    v.paddingTop + fixHeight,
+                    v.paddingRight,
+                    v.paddingBottom
+                )
+                v.layoutParams = lp
+            }
+        } else {
+            lp.height += fixHeight
+            v.setPadding(
+                v.paddingLeft,
+                v.paddingTop + fixHeight,
+                v.paddingRight,
+                v.paddingBottom
+            )
+            v.layoutParams = lp
+        }
+    }
+}
+
+/**
+ * 为 自定义标题栏 marginTop 增加fixHeight
+ */
+fun setTitleBarMarginTop(@IntRange(from = 0) fixHeight: Int, vararg views: View) {
+    views.filter { v ->
+        v.getTag(IMMERSION_FITS_LAYOUT_OVERLAP) as? Int ?: 0 != fixHeight
+    }.forEach { v ->
+        v.setTag(IMMERSION_FITS_LAYOUT_OVERLAP, fixHeight)
+        val lp = v.layoutParams ?: ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+        lp as ViewGroup.MarginLayoutParams
+        lp.setMargins(
+            lp.leftMargin,
+            lp.topMargin + fixHeight,
+            lp.rightMargin,
+            lp.bottomMargin
+        )
+        v.layoutParams = lp
+    }
+}
+
+/**
+ * 给 自定义状态栏 设置statusBar的高度
+ */
+fun setStatusBarView(@IntRange(from = 0) fixHeight: Int, v: View) {
+    val fitsHeight = v.getTag(IMMERSION_FITS_LAYOUT_OVERLAP) as? Int ?: 0
+    if (fitsHeight == fixHeight) return
+
+    v.setTag(IMMERSION_FITS_LAYOUT_OVERLAP, fixHeight)
+    val lp = v.layoutParams ?: ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        0
+    )
+    lp.height = fixHeight
+    v.layoutParams = lp
 }
 
 /**
@@ -48,8 +125,10 @@ fun Activity.getActionBarHeight(): Int {
         return actionBar.measuredHeight
     }
     val typedValue = TypedValue()
-    theme.resolveAttribute(android.R.attr.actionBarSize, typedValue, true)
-    return TypedValue.complexToDimensionPixelSize(typedValue.data, resources.displayMetrics)
+    theme.resolveAttribute(android.R.attr.actionBarSize,
+        typedValue, true)
+    return TypedValue.complexToDimensionPixelSize(
+        typedValue.data, resources.displayMetrics)
 }
 
 /**
@@ -89,7 +168,7 @@ internal fun Activity.getSmallestWidthDp(): Float {
 /**
  * 界面中是否有导航栏
  */
-fun Activity.hasNavigationBar(): Boolean {
+private fun Activity.hasNavigationBar(): Boolean {
     // 判断小米手机是否开启了全面屏，开启了，直接返回false
     if (getGlobalBool(MIUI_NAVIGATION_BAR_HIDE_SHOW)) {
         return false
@@ -122,7 +201,8 @@ private fun Activity.getGlobalBool(key: String): Boolean {
 
 private fun Context.getInternalDimensionSize(key: String): Int {
     try {
-        val resourceId = Resources.getSystem().getIdentifier(key, "dimen", "android")
+        val resourceId = Resources.getSystem().getIdentifier(
+            key, "dimen", "android")
         if (resourceId > 0) {
             val sizeOne = resources.getDimensionPixelSize(resourceId)
             val sizeTwo = Resources.getSystem().getDimensionPixelSize(resourceId)
