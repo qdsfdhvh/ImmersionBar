@@ -109,7 +109,7 @@ internal fun setStatusBarDarkIcon(window: Window, @ColorInt color: Int) {
  * 设置状态栏字体图标颜色
  * @param isDark 是否使用深色
  */
-private fun Activity.setStatusBarDarkIcon(isDark: Boolean, flag: Boolean = true) {
+internal fun Activity.setStatusBarDarkIcon(isDark: Boolean, flag: Boolean = true) {
     val method = mSetStatusBarDarkIcon
     if (method != null) {
         try {

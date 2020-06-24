@@ -8,6 +8,9 @@ import android.os.Build
 import android.util.TypedValue
 import android.view.DisplayCutout
 import android.view.View
+import android.view.Window
+import android.view.WindowManager
+import androidx.annotation.RequiresApi
 
 /**
  * 系统属性
@@ -40,6 +43,16 @@ private const val NOTCH_VIVO = "android.util.FtFeature"
 private const val NOTCH_OPPO = "com.oppo.feature.screen.heteromorphism"
 
 /**
+ * 适配刘海屏
+ */
+@RequiresApi(Build.VERSION_CODES.P)
+internal fun Window.fitsNotchScreen() {
+    val lp = attributes
+    lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+    attributes = lp
+}
+
+/**
  * 判断是否是刘海屏
  */
 fun Activity.hasNotchScreen(): Boolean {
@@ -64,7 +77,7 @@ fun View.hasNotchScreen(): Boolean {
 /**
  * 获得刘海屏高度
  */
-fun Activity.getNotchHeight(): Int {
+internal fun Activity.getNotchHeight(): Int {
     val displayCutout = getDisplayCutout()
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && displayCutout != null) {
         return when {

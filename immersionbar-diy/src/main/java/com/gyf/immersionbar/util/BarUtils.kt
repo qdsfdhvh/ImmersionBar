@@ -13,16 +13,6 @@ import android.view.View
 import com.gyf.immersionbar.diy.R
 
 /**
- * MIUI导航栏显示隐藏标识位
- */
-private const val MIUI_NAVIGATION_BAR_HIDE_SHOW = "force_fsg_nav_bar"
-
-/**
- * EMUI导航栏显示隐藏标识位
- */
-private const val EMUI_NAVIGATION_BAR_HIDE_SHOW = "navigationbar_is_min"
-
-/**
  * 状态栏高度标识位
  */
 private const val STATUS_BAR_HEIGHT = "status_bar_height"
@@ -86,6 +76,14 @@ fun Activity.getNavigationBarWidth(): Int {
         return getInternalDimensionSize(NAVIGATION_BAR_WIDTH)
     }
     return 0
+}
+
+internal fun Activity.getSmallestWidthDp(): Float {
+    val metrics = DisplayMetrics()
+    windowManager.defaultDisplay.getRealMetrics(metrics)
+    val widthDp = metrics.widthPixels / metrics.density
+    val heightDp = metrics.heightPixels / metrics.density
+    return widthDp.coerceAtMost(heightDp)
 }
 
 /**
