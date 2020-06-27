@@ -48,6 +48,11 @@ public class NotchUtils {
      * The constant NOTCH_OPPO.
      */
     private static final String NOTCH_OPPO = "com.oppo.feature.screen.heteromorphism";
+    /**
+     * Lenovo刘海
+     * The Notch lenovo.
+     */
+    private static final String NOTCH_LENOVO = "config_screen_has_notch";
 
 
     /**
@@ -58,11 +63,18 @@ public class NotchUtils {
      * @return the boolean
      */
     public static boolean hasNotchScreen(Activity activity) {
-        return activity != null && (hasNotchAtXiaoMi(activity) ||
-                hasNotchAtHuaWei(activity) ||
-                hasNotchAtOPPO(activity) ||
-                hasNotchAtVIVO(activity) ||
-                hasNotchAtAndroidP(activity));
+        if (activity != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                return hasNotchAtAndroidP(activity);
+            } else {
+                return hasNotchAtXiaoMi(activity) ||
+                        hasNotchAtHuaWei(activity) ||
+                        hasNotchAtOPPO(activity) ||
+                        hasNotchAtVIVO(activity) ||
+                        hasNotchAtLenovo(activity);
+            }
+        }
+        return false;
     }
 
     /**
@@ -73,11 +85,17 @@ public class NotchUtils {
      * @return the boolean
      */
     public static boolean hasNotchScreen(View view) {
-        return view != null && (hasNotchAtXiaoMi(view.getContext()) ||
-                hasNotchAtHuaWei(view.getContext()) ||
-                hasNotchAtOPPO(view.getContext()) ||
-                hasNotchAtVIVO(view.getContext()) ||
-                hasNotchAtAndroidP(view));
+        if (view != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                return hasNotchAtAndroidP(view);
+            } else {
+                return hasNotchAtXiaoMi(view.getContext()) ||
+                        hasNotchAtHuaWei(view.getContext()) ||
+                        hasNotchAtOPPO(view.getContext()) ||
+                        hasNotchAtVIVO(view.getContext());
+            }
+        }
+        return false;
     }
 
     /**
@@ -143,16 +161,19 @@ public class NotchUtils {
      * @param context the context
      * @return the int
      */
+
+    @SuppressLint("PrivateApi")
     private static boolean hasNotchAtXiaoMi(Context context) {
         int result = 0;
-        if ("Xiaomi".equals(Build.MANUFACTURER)) {
+        if (OSUtils.isXiaoMi()) {
             try {
                 ClassLoader classLoader = context.getClassLoader();
-                @SuppressLint("PrivateApi")
                 Class<?> aClass = classLoader.loadClass(SYSTEM_PROPERTIES);
                 Method method = aClass.getMethod("getInt", String.class, int.class);
-                result = (Integer) method.invoke(aClass, NOTCH_XIAO_MI, 0);
-
+                Object o = method.invoke(aClass, NOTCH_XIAO_MI, 0);
+                if (o != null) {
+                    result = (Integer) o;
+                }
             } catch (NoSuchMethodException ignored) {
             } catch (IllegalAccessException ignored) {
             } catch (InvocationTargetException ignored) {
@@ -169,16 +190,19 @@ public class NotchUtils {
      * @param context the context
      * @return the boolean
      */
+    @SuppressLint("PrivateApi")
     private static boolean hasNotchAtHuaWei(Context context) {
         boolean result = false;
-        try {
-            ClassLoader classLoader = context.getClassLoader();
-            Class<?> aClass = classLoader.loadClass(NOTCH_HUA_WEI);
-            Method get = aClass.getMethod("hasNotchInScreen");
-            result = (boolean) get.invoke(aClass);
-        } catch (ClassNotFoundException ignored) {
-        } catch (NoSuchMethodException ignored) {
-        } catch (Exception ignored) {
+        if (OSUtils.isHuaWei()) {
+            try {
+                ClassLoader classLoader = context.getClassLoader();
+                Class<?> aClass = classLoader.loadClass(NOTCH_HUA_WEI);
+                Method get = aClass.getMethod("hasNotchInScreen");
+                result = (boolean) get.invoke(aClass);
+            } catch (ClassNotFoundException ignored) {
+            } catch (NoSuchMethodException ignored) {
+            } catch (Exception ignored) {
+            }
         }
         return result;
     }
@@ -190,17 +214,19 @@ public class NotchUtils {
      * @param context the context
      * @return the boolean
      */
+    @SuppressLint("PrivateApi")
     private static boolean hasNotchAtVIVO(Context context) {
         boolean result = false;
-        try {
-            ClassLoader classLoader = context.getClassLoader();
-            @SuppressLint("PrivateApi")
-            Class<?> aClass = classLoader.loadClass(NOTCH_VIVO);
-            Method method = aClass.getMethod("isFeatureSupport", int.class);
-            result = (boolean) method.invoke(aClass, 0x00000020);
-        } catch (ClassNotFoundException ignored) {
-        } catch (NoSuchMethodException ignored) {
-        } catch (Exception ignored) {
+        if (OSUtils.isVivo()) {
+            try {
+                ClassLoader classLoader = context.getClassLoader();
+                Class<?> aClass = classLoader.loadClass(NOTCH_VIVO);
+                Method method = aClass.getMethod("isFeatureSupport", int.class);
+                result = (boolean) method.invoke(aClass, 0x00000020);
+            } catch (ClassNotFoundException ignored) {
+            } catch (NoSuchMethodException ignored) {
+            } catch (Exception ignored) {
+            }
         }
         return result;
     }
@@ -213,11 +239,33 @@ public class NotchUtils {
      * @return the boolean
      */
     private static boolean hasNotchAtOPPO(Context context) {
-        try {
-            return context.getPackageManager().hasSystemFeature(NOTCH_OPPO);
-        } catch (Exception ignored) {
-            return false;
+        if (OSUtils.isOppo()) {
+            try {
+                return context.getPackageManager().hasSystemFeature(NOTCH_OPPO);
+            } catch (Exception ignored) {
+                return false;
+            }
         }
+        return false;
+    }
+
+
+    /**
+     * Lenovo刘海屏判断
+     * Has notch at lenovo boolean.
+     *
+     * @param context the context
+     * @return the boolean
+     */
+    private static boolean hasNotchAtLenovo(Context context) {
+        if (OSUtils.isOppo()) {
+            int resourceId = context.getResources().getIdentifier(NOTCH_LENOVO,
+                    "bool", "android");
+            if (resourceId > 0) {
+                return context.getResources().getBoolean(resourceId);
+            }
+        }
+        return false;
     }
 
     /**
@@ -228,6 +276,9 @@ public class NotchUtils {
      * @return the int
      */
     public static int getNotchHeight(Activity activity) {
+        if (hasNotchScreen(activity)) {
+            return 0;
+        }
         int notchHeight = 0;
         int statusBarHeight = ImmersionBar.getStatusBarHeight(activity);
         DisplayCutout displayCutout = getDisplayCutout(activity);
@@ -260,8 +311,29 @@ public class NotchUtils {
                     notchHeight = statusBarHeight;
                 }
             }
+            if (hasNotchAtLenovo(activity)) {
+                notchHeight = getLenovoNotchHeight(activity);
+            }
         }
         return notchHeight;
+    }
+
+    /**
+     * 获得刘海屏高度
+     * Gets notch height.
+     *
+     * @param activity the activity
+     * @param callback the callback
+     */
+    public static void getNotchHeight(final Activity activity, final NotchCallback callback) {
+        activity.getWindow().getDecorView().post(new Runnable() {
+            @Override
+            public void run() {
+                if (callback != null) {
+                    callback.onNotchHeight(getNotchHeight(activity));
+                }
+            }
+        });
     }
 
     /**
@@ -271,7 +343,8 @@ public class NotchUtils {
      * @return the xiao mi notch height
      */
     private static int getXiaoMiNotchHeight(Context context) {
-        int resourceId = context.getResources().getIdentifier("notch_height", "dimen", "android");
+        int resourceId = context.getResources().getIdentifier("notch_height",
+                "dimen", "android");
         if (resourceId > 0) {
             return context.getResources().getDimensionPixelSize(resourceId);
         } else {
@@ -298,6 +371,24 @@ public class NotchUtils {
             return ret;
         } catch (Exception ignored) {
             return ret;
+        }
+    }
+
+    /**
+     * 获得联想刘海屏高度
+     * <p>
+     * Gets lenovo notch height.
+     *
+     * @param context the context
+     * @return the lenovo notch height
+     */
+    private static int getLenovoNotchHeight(Context context) {
+        int resourceId = context.getResources().getIdentifier("notch_h", "dimen",
+                "android");
+        if (resourceId > 0) {
+            return context.getResources().getDimensionPixelSize(resourceId);
+        } else {
+            return 0;
         }
     }
 

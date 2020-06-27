@@ -2,9 +2,9 @@ package com.gyf.immersionbar.ktx
 
 import android.app.Activity
 import android.app.Dialog
-import android.support.v4.app.DialogFragment
-import android.support.v4.app.Fragment
 import android.view.View
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import com.gyf.immersionbar.ImmersionBar
 
 /**
@@ -59,6 +59,10 @@ fun Fragment.destroyImmersionBar(dialog: Dialog) = activity?.run { ImmersionBar.
 
 fun android.app.Fragment.destroyImmersionBar(dialog: Dialog) = activity?.run { ImmersionBar.destroy(this, dialog) }
         ?: Unit
+
+// Fragment销毁
+@JvmOverloads
+fun Fragment.destroyImmersionBar(isOnly: Boolean = false) = ImmersionBar.destroy(this, isOnly)
 
 // 状态栏扩展
 val Activity.statusBarHeight get() = ImmersionBar.getStatusBarHeight(this)

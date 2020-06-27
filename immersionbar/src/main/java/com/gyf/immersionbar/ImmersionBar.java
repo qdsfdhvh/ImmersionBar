@@ -6,24 +6,25 @@ import android.app.Dialog;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
-import android.support.annotation.ColorInt;
-import android.support.annotation.ColorRes;
-import android.support.annotation.FloatRange;
-import android.support.annotation.IdRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.ColorUtils;
-import android.support.v4.widget.DrawerLayout;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.ColorRes;
+import androidx.annotation.FloatRange;
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,10 +36,10 @@ import static com.gyf.immersionbar.Constants.FLAG_FITS_SYSTEM_WINDOWS;
 import static com.gyf.immersionbar.Constants.FLAG_FITS_TITLE;
 import static com.gyf.immersionbar.Constants.FLAG_FITS_TITLE_MARGIN_TOP;
 import static com.gyf.immersionbar.Constants.IMMERSION_BOUNDARY_COLOR;
-import static com.gyf.immersionbar.Constants.IMMERSION_ID_NAVIGATION_BAR_VIEW;
-import static com.gyf.immersionbar.Constants.IMMERSION_ID_STATUS_BAR_VIEW;
-import static com.gyf.immersionbar.Constants.IMMERSION_MIUI_NAVIGATION_BAR_DARK;
-import static com.gyf.immersionbar.Constants.IMMERSION_MIUI_STATUS_BAR_DARK;
+import static com.gyf.immersionbar.Constants.IMMERSION_NAVIGATION_BAR_DARK_MIUI;
+import static com.gyf.immersionbar.Constants.IMMERSION_NAVIGATION_BAR_VIEW_ID;
+import static com.gyf.immersionbar.Constants.IMMERSION_STATUS_BAR_DARK_MIUI;
+import static com.gyf.immersionbar.Constants.IMMERSION_STATUS_BAR_VIEW_ID;
 
 /**
  * android 4.4以上沉浸式以及bar的管理
@@ -276,6 +277,7 @@ public final class ImmersionBar implements ImmersionCallback {
     }
 
     void onResume() {
+        updateBarConfig();
         if (!mIsFragment && mInitialized && mBarParams != null) {
             if (OSUtils.isEMUI3_x() && mBarParams.navigationBarWithEMUI3Enable) {
                 init();
@@ -288,6 +290,7 @@ public final class ImmersionBar implements ImmersionCallback {
     }
 
     void onConfigurationChanged(Configuration newConfig) {
+        updateBarConfig();
         if (OSUtils.isEMUI3_x() || Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
             if (mInitialized && !mIsFragment && mBarParams.navigationBarWithKitkatEnable) {
                 init();
@@ -307,7 +310,9 @@ public final class ImmersionBar implements ImmersionCallback {
         adjustDarkModeParams();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             //获得Bar相关信息
-            updateBarConfig();
+            if (!mInitialized || mIsFragment) {
+                updateBarConfig();
+            }
             if (mParentBar != null) {
                 //如果在Fragment中使用，让Activity同步Fragment的BarParams参数
                 if (mIsFragment) {
@@ -355,10 +360,10 @@ public final class ImmersionBar implements ImmersionCallback {
     private void setSpecialBarDarkMode() {
         if (OSUtils.isMIUI6Later()) {
             //修改miui状态栏字体颜色
-            SpecialBarFontUtils.setMIUIBarDark(mWindow, IMMERSION_MIUI_STATUS_BAR_DARK, mBarParams.statusBarDarkFont);
+            SpecialBarFontUtils.setMIUIBarDark(mWindow, IMMERSION_STATUS_BAR_DARK_MIUI, mBarParams.statusBarDarkFont);
             //修改miui导航栏图标为黑色
             if (mBarParams.navigationBarEnable) {
-                SpecialBarFontUtils.setMIUIBarDark(mWindow, IMMERSION_MIUI_NAVIGATION_BAR_DARK, mBarParams.navigationBarDarkIcon);
+                SpecialBarFontUtils.setMIUIBarDark(mWindow, IMMERSION_NAVIGATION_BAR_DARK_MIUI, mBarParams.navigationBarDarkIcon);
             }
         }
         // 修改Flyme OS状态栏字体颜色
@@ -457,7 +462,7 @@ public final class ImmersionBar implements ImmersionCallback {
      * 设置一个可以自定义颜色的状态栏
      */
     private void setupStatusBarView() {
-        View statusBarView = mDecorView.findViewById(IMMERSION_ID_STATUS_BAR_VIEW);
+        View statusBarView = mDecorView.findViewById(IMMERSION_STATUS_BAR_VIEW_ID);
         if (statusBarView == null) {
             statusBarView = new View(mActivity);
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,
@@ -465,7 +470,7 @@ public final class ImmersionBar implements ImmersionCallback {
             params.gravity = Gravity.TOP;
             statusBarView.setLayoutParams(params);
             statusBarView.setVisibility(View.VISIBLE);
-            statusBarView.setId(IMMERSION_ID_STATUS_BAR_VIEW);
+            statusBarView.setId(IMMERSION_STATUS_BAR_VIEW_ID);
             mDecorView.addView(statusBarView);
         }
         if (mBarParams.statusBarColorEnabled) {
@@ -481,10 +486,10 @@ public final class ImmersionBar implements ImmersionCallback {
      * 设置一个可以自定义颜色的导航栏
      */
     private void setupNavBarView() {
-        View navigationBarView = mDecorView.findViewById(IMMERSION_ID_NAVIGATION_BAR_VIEW);
+        View navigationBarView = mDecorView.findViewById(IMMERSION_NAVIGATION_BAR_VIEW_ID);
         if (navigationBarView == null) {
             navigationBarView = new View(mActivity);
-            navigationBarView.setId(IMMERSION_ID_NAVIGATION_BAR_VIEW);
+            navigationBarView.setId(IMMERSION_NAVIGATION_BAR_VIEW_ID);
             mDecorView.addView(navigationBarView);
         }
 
@@ -511,12 +516,16 @@ public final class ImmersionBar implements ImmersionCallback {
      * 调整深色亮色模式参数
      */
     private void adjustDarkModeParams() {
-        if (mBarParams.autoStatusBarDarkModeEnable && mBarParams.statusBarColor != Color.TRANSPARENT) {
-            boolean statusBarDarkFont = mBarParams.statusBarColor > IMMERSION_BOUNDARY_COLOR;
+        int statusBarColor = ColorUtils.blendARGB(mBarParams.statusBarColor,
+                mBarParams.statusBarColorTransform, mBarParams.statusBarAlpha);
+        if (mBarParams.autoStatusBarDarkModeEnable && statusBarColor != Color.TRANSPARENT) {
+            boolean statusBarDarkFont = statusBarColor > IMMERSION_BOUNDARY_COLOR;
             statusBarDarkFont(statusBarDarkFont, mBarParams.autoStatusBarDarkModeAlpha);
         }
-        if (mBarParams.autoNavigationBarDarkModeEnable && mBarParams.navigationBarColor != Color.TRANSPARENT) {
-            boolean navigationBarDarkIcon = mBarParams.navigationBarColor > IMMERSION_BOUNDARY_COLOR;
+        int navigationBarColor = ColorUtils.blendARGB(mBarParams.navigationBarColor,
+                mBarParams.navigationBarColorTransform, mBarParams.navigationBarAlpha);
+        if (mBarParams.autoNavigationBarDarkModeEnable && navigationBarColor != Color.TRANSPARENT) {
+            boolean navigationBarDarkIcon = navigationBarColor > IMMERSION_BOUNDARY_COLOR;
             navigationBarDarkIcon(navigationBarDarkIcon, mBarParams.autoNavigationBarDarkModeAlpha);
         }
     }
@@ -589,7 +598,6 @@ public final class ImmersionBar implements ImmersionCallback {
     }
 
     private void postFitsWindowsBelowLOLLIPOP() {
-        updateBarConfig();
         //解决android4.4有导航栏的情况下，activity底部被导航栏遮挡的问题和android 5.0以下解决状态栏和布局重叠问题
         fitsWindowsKITKAT();
         //解决华为emui3.1或者3.0导航栏手动隐藏的问题
@@ -603,7 +611,6 @@ public final class ImmersionBar implements ImmersionCallback {
      * Fits windows above lollipop.
      */
     private void fitsWindowsAboveLOLLIPOP() {
-        updateBarConfig();
         if (checkFitsSystemWindows(mDecorView.findViewById(android.R.id.content))) {
             setPadding(0, 0, 0, 0);
             return;
@@ -663,7 +670,7 @@ public final class ImmersionBar implements ImmersionCallback {
      * Register emui 3 x.
      */
     private void fitsWindowsEMUI() {
-        View navigationBarView = mDecorView.findViewById(IMMERSION_ID_NAVIGATION_BAR_VIEW);
+        View navigationBarView = mDecorView.findViewById(IMMERSION_NAVIGATION_BAR_VIEW_ID);
         if (mBarParams.navigationBarEnable && mBarParams.navigationBarWithKitkatEnable) {
             if (navigationBarView != null) {
                 EMUI3NavigationBarObserver.getInstance().addOnNavigationBarListener(this);
@@ -687,7 +694,7 @@ public final class ImmersionBar implements ImmersionCallback {
 
     @Override
     public void onNavigationBarChange(boolean show) {
-        View navigationBarView = mDecorView.findViewById(IMMERSION_ID_NAVIGATION_BAR_VIEW);
+        View navigationBarView = mDecorView.findViewById(IMMERSION_NAVIGATION_BAR_VIEW_ID);
         if (navigationBarView != null) {
             mBarConfig = new BarConfig(mActivity);
             int bottom = mContentView.getPaddingBottom(), right = mContentView.getPaddingRight();
@@ -761,7 +768,7 @@ public final class ImmersionBar implements ImmersionCallback {
     private void fitsLayoutOverlap() {
         int fixHeight = 0;
         if (mBarParams.fitsLayoutOverlapEnable) {
-            fixHeight = getStatusBarHeight(mActivity);
+            fixHeight = mBarConfig.getStatusBarHeight();
         }
         switch (mFitsStatusBarType) {
             case FLAG_FITS_TITLE:
@@ -1549,11 +1556,7 @@ public final class ImmersionBar implements ImmersionCallback {
      * @return the int
      */
     public static int getNotchHeight(@NonNull Activity activity) {
-        if (hasNotchScreen(activity)) {
-            return NotchUtils.getNotchHeight(activity);
-        } else {
-            return 0;
-        }
+        return NotchUtils.getNotchHeight(activity);
     }
 
     public static int getNotchHeight(@NonNull Fragment fragment) {
@@ -1568,6 +1571,24 @@ public final class ImmersionBar implements ImmersionCallback {
             return 0;
         }
         return getNotchHeight(fragment.getActivity());
+    }
+
+    public static void getNotchHeight(@NonNull Activity activity, NotchCallback callback) {
+        NotchUtils.getNotchHeight(activity, callback);
+    }
+
+    public static void getNotchHeight(@NonNull Fragment fragment, NotchCallback callback) {
+        if (fragment.getActivity() == null) {
+            return;
+        }
+        getNotchHeight(fragment.getActivity(), callback);
+    }
+
+    public static void getNotchHeight(@NonNull android.app.Fragment fragment, NotchCallback callback) {
+        if (fragment.getActivity() == null) {
+            return;
+        }
+        getNotchHeight(fragment.getActivity(), callback);
     }
 
     /**

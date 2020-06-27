@@ -3,6 +3,7 @@ package com.gyf.immersionbar;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -14,10 +15,13 @@ import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 
-import static com.gyf.immersionbar.Constants.IMMERSION_EMUI_NAVIGATION_BAR_HIDE_SHOW;
-import static com.gyf.immersionbar.Constants.IMMERSION_MIUI_NAVIGATION_BAR_HIDE_SHOW;
 import static com.gyf.immersionbar.Constants.IMMERSION_NAVIGATION_BAR_HEIGHT;
 import static com.gyf.immersionbar.Constants.IMMERSION_NAVIGATION_BAR_HEIGHT_LANDSCAPE;
+import static com.gyf.immersionbar.Constants.IMMERSION_NAVIGATION_BAR_MODE_EMUI;
+import static com.gyf.immersionbar.Constants.IMMERSION_NAVIGATION_BAR_MODE_MIUI;
+import static com.gyf.immersionbar.Constants.IMMERSION_NAVIGATION_BAR_MODE_OPPO;
+import static com.gyf.immersionbar.Constants.IMMERSION_NAVIGATION_BAR_MODE_SAMSUNG;
+import static com.gyf.immersionbar.Constants.IMMERSION_NAVIGATION_BAR_MODE_VIVO;
 import static com.gyf.immersionbar.Constants.IMMERSION_NAVIGATION_BAR_WIDTH;
 import static com.gyf.immersionbar.Constants.IMMERSION_STATUS_BAR_HEIGHT;
 
@@ -101,21 +105,30 @@ class BarConfig {
     @TargetApi(14)
     private boolean hasNavBar(Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            //判断小米手机是否开启了全面屏，开启了，直接返回false
-            if (Settings.Global.getInt(activity.getContentResolver(), IMMERSION_MIUI_NAVIGATION_BAR_HIDE_SHOW, 0) != 0) {
+            ContentResolver resolver = activity.getContentResolver();
+            //判断华为手机是否隐藏了导航栏，隐藏了，直接返回false
+            if (Settings.Global.getInt(resolver, IMMERSION_NAVIGATION_BAR_MODE_EMUI, 0) != 0) {
                 return false;
             }
-            //判断华为手机是否隐藏了导航栏，隐藏了，直接返回false
-            if (OSUtils.isEMUI()) {
-                if (OSUtils.isEMUI3_x() || Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-                    if (Settings.System.getInt(activity.getContentResolver(), IMMERSION_EMUI_NAVIGATION_BAR_HIDE_SHOW, 0) != 0) {
-                        return false;
-                    }
-                } else {
-                    if (Settings.Global.getInt(activity.getContentResolver(), IMMERSION_EMUI_NAVIGATION_BAR_HIDE_SHOW, 0) != 0) {
-                        return false;
-                    }
-                }
+            //判断华为EMUI_3.x手机是否隐藏了导航栏，隐藏了，直接返回false
+            if (Settings.System.getInt(resolver, IMMERSION_NAVIGATION_BAR_MODE_EMUI, 0) != 0) {
+                return false;
+            }
+            //判断小米手机是否开启了全面屏，开启了，直接返回false
+            if (Settings.Global.getInt(resolver, IMMERSION_NAVIGATION_BAR_MODE_MIUI, 0) != 0) {
+                return false;
+            }
+            //判断VIVO手机是否开启了全面屏，开启了，直接返回false
+            if (Settings.Secure.getInt(resolver, IMMERSION_NAVIGATION_BAR_MODE_VIVO, 0) != 0) {
+                return false;
+            }
+            //判断OPPO手机是否开启了全面屏，开启了，直接返回false
+            if (Settings.Secure.getInt(resolver, IMMERSION_NAVIGATION_BAR_MODE_OPPO, 0) != 0) {
+                return false;
+            }
+            //判断SAMSUNG手机是否开启了全面屏，开启了，直接返回false
+            if (Settings.Global.getInt(resolver, IMMERSION_NAVIGATION_BAR_MODE_SAMSUNG, 0) != 0) {
+                return false;
             }
         }
         //其他手机根据屏幕真实高度与显示高度是否相同来判断
@@ -147,7 +160,8 @@ class BarConfig {
                 int sizeOne = context.getResources().getDimensionPixelSize(resourceId);
                 int sizeTwo = Resources.getSystem().getDimensionPixelSize(resourceId);
 
-                if (sizeTwo >= sizeOne) {
+                if (sizeTwo >= sizeOne && !(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+                        !key.equals(IMMERSION_STATUS_BAR_HEIGHT))) {
                     return sizeTwo;
                 } else {
                     float densityOne = context.getResources().getDisplayMetrics().density;
