@@ -1,20 +1,40 @@
 package com.gyf.immersionbar
 
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
 
-val Fragment.immersionBar: ImmersionBar
-    get() = requireActivity().barScope {
-        ImmersionBar(requireActivity()).apply { bindLifecycle(lifecycle) }
-    }
-
 val FragmentActivity.immersionBar: ImmersionBar
     get() = barScope {
-        ImmersionBar(this).apply { bindLifecycle(lifecycle) }
+        ImmersionBar(
+            activity = this
+        ).apply { bindLifecycle(lifecycle) }
     }
 
-private fun ImmersionBar.bindLifecycle(lifecycle: Lifecycle) {
+val Fragment.immersionBar: ImmersionBar
+    get() = requireActivity().barScope {
+        ImmersionBar(
+            activity = requireActivity(),
+            isFragment = true,
+            fragment = this,
+            parent = requireActivity().immersionBar
+        ).apply { bindLifecycle(lifecycle) }
+    }
+
+val DialogFragment.immersionBar: ImmersionBar
+    get() = requireActivity().barScope {
+        ImmersionBar(
+            activity = requireActivity(),
+            isFragment = true,
+            fragment = this,
+            isDialog = true,
+            dialog = requireDialog(),
+            parent = requireActivity().immersionBar
+        ).apply { bindLifecycle(lifecycle) }
+    }
+
+fun ImmersionBar.bindLifecycle(lifecycle: Lifecycle) {
     lifecycle.addObserver(object : LifecycleEventObserver {
         override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
             when(event) {
@@ -25,7 +45,7 @@ private fun ImmersionBar.bindLifecycle(lifecycle: Lifecycle) {
                     onResume()
                 }
                 Lifecycle.Event.ON_PAUSE -> {
-
+                    onPause()
                 }
                 Lifecycle.Event.ON_DESTROY -> {
                     onDestroy()
@@ -37,7 +57,7 @@ private fun ImmersionBar.bindLifecycle(lifecycle: Lifecycle) {
     })
 }
 
-private fun FragmentActivity.barScope(creator: () -> ImmersionBar): ImmersionBar {
+fun FragmentActivity.barScope(creator: () -> ImmersionBar): ImmersionBar {
     val viewModel = ViewModelProvider(this, factory)
             .get(ImmersionBarViewModel::class.java)
     var bar = viewModel.get(tag)

@@ -7,7 +7,7 @@ import android.view.WindowManager
 import androidx.annotation.ColorInt
 import androidx.annotation.FloatRange
 import com.gyf.immersionbar.annotation.BarHide
-import com.gyf.immersionbar.annotation.FitsFlag
+import com.gyf.immersionbar.util.IMMERSION_BOUNDARY_COLOR
 import com.gyf.immersionbar.util.isEMUI3x
 
 private const val DEFAULT_KEYBOARD_MODE = (
@@ -20,7 +20,7 @@ data class BarConfig(
     // 状态栏变换后的颜色
     @ColorInt val statusBarColorTransform: Int = Color.BLACK,
     // 状态栏透明度
-    @FloatRange(from = 0.0, to = 1.0) val statusBarAlpha: Float = 0.0f,
+    @FloatRange(from = 0.0, to = 1.0) var statusBarAlpha: Float = 0.0f,
     @FloatRange(from = 0.0, to = 1.0) val statusBarTempAlpha: Float = 0.0f,
 
     // 导航栏颜色
@@ -28,7 +28,7 @@ data class BarConfig(
     // 航栏变换后的颜色
     @ColorInt val navigationBarColorTransform: Int = Color.BLACK,
     // 导航栏透明度
-    @FloatRange(from = 0.0, to = 1.0) val navigationBarAlpha: Float = 0.0f,
+    @FloatRange(from = 0.0, to = 1.0) var navigationBarAlpha: Float = 0.0f,
     @FloatRange(from = 0.0, to = 1.0) val navigationBarTempAlpha: Float = 0.0f,
 
     // 在有导航栏的情况下，是否全屏
@@ -42,23 +42,23 @@ data class BarConfig(
     @FloatRange(from = 0.0, to = 1.0) val autoNavigationBarDarkModeAlpha: Float = 0.0f,
 
     // 状态栏字体设为深色
-    val statusBarDarkFont: Boolean = false,
+    var statusBarDarkFont: Boolean = false,
     // 导航栏图标设为深色
     var navigationBarDarkIcon: Boolean = false,
 
     // flymeOS状态栏字体变色
     @ColorInt var flymeOSStatusBarFontColor: Int = 0,
-    @ColorInt var flymeOSStatusBarFontTempColor: Int = 0,
+    @ColorInt val flymeOSStatusBarFontTempColor: Int = 0,
 
     // 标题栏(StatusBar)与导航栏(NavigationBar)的显示状态
     @BarHide var barHideCode: Int = BarHide.FLAG_SHOW_BAR,
     // 是否隐藏导航栏
     val hideNavigationBar: Boolean = false,
 
-    // 解决标题栏与状态栏重叠问题
-    val fits: Boolean = false,
-    // 当前顶部布局和状态栏重叠是以哪种方式适配的
-    @FitsFlag val fitsStatusBarType: Int = FitsFlag.DEFAULT,
+//    // 解决标题栏与状态栏重叠问题
+//    val fits: Boolean = false,
+//    // 当前顶部布局和状态栏重叠是以哪种方式适配的
+//    @FitsFlag val fitsStatusBarType: Int = FitsFlag.DEFAULT,
 
     // 整体界面背景色
     @ColorInt val contentColor: Int = Color.TRANSPARENT,
@@ -71,14 +71,14 @@ data class BarConfig(
     val fitsLayoutOverlapEnable: Boolean = true,
 
     // 解决标题栏与状态栏重叠问题
-    var statusBarView: View? = null,
+    val statusBarView: View? = null,
     // 解决标题栏与状态栏重叠问题v2
-    var titleBarView: View? = null,
+    val titleBarView: View? = null,
     // 是否可以修改状态栏颜色
     val statusBarColorEnabled: Boolean = true,
 
     // 结合actionBar使用
-    var isSupportActionBar: Boolean = false,
+    val isSupportActionBar: Boolean = false,
 
     // 解决软键盘与输入框冲突问题
     var keyboardEnable: Boolean = false,
@@ -86,17 +86,67 @@ data class BarConfig(
     var keyboardMode: Int = DEFAULT_KEYBOARD_MODE,
 
     // 是否能修改导航栏颜色
-    var navigationBarEnable: Boolean = true,
+    val navigationBarEnable: Boolean = true,
     // 是否能修改4.4手机以及华为emui3.1导航栏颜色
     val navigationBarWithKitkatEnable: Boolean = true,
     // 是否可以修改emui3系列手机导航栏
     val navigationBarWithEMUI3Enable: Boolean = true,
 
     // view透明度
-    @FloatRange(from = 0.0, to = 1.0) var viewAlpha: Float = 0.0f,
+    @FloatRange(from = 0.0, to = 1.0) var viewAlpha: Float? = null,
     // 同步变色的view
     var viewMap: Map<View, Pair<Int, Int>>? = null
 ) {
+
+    /**
+     * 调整深色亮色模式参数
+     */
+    fun adjustDarkModeParams() {
+        if (autoStatusBarDarkModeEnable && statusBarColor != Color.TRANSPARENT) {
+            val statusBarDarkFont = statusBarColor > IMMERSION_BOUNDARY_COLOR
+            statusBarDarkFont(statusBarDarkFont, autoStatusBarDarkModeAlpha)
+        }
+        if (autoNavigationBarDarkModeEnable && navigationBarColor != Color.TRANSPARENT) {
+            val navigationBarDarkIcon = navigationBarColor > IMMERSION_BOUNDARY_COLOR
+            navigationBarDarkIcon(navigationBarDarkIcon, autoNavigationBarDarkModeAlpha)
+        }
+    }
+
+    /**
+     * 设置状态栏字体为 深色 或 亮色
+     * @param isDarkFont true深色 false亮色
+     * @param statusBarAlpha 状态栏透明度，在字体不支持变色时使用
+     */
+    private fun statusBarDarkFont(
+        isDarkFont: Boolean,
+        @FloatRange(from = 0.0, to = 1.0) statusBarAlpha: Float = 0.2f
+    ) {
+        this.statusBarDarkFont = isDarkFont
+        if (isDarkFont && !isSupportStatusBarDarkFont()) {
+            this.statusBarAlpha = statusBarAlpha
+        } else {
+            flymeOSStatusBarFontColor = flymeOSStatusBarFontTempColor
+            this.statusBarAlpha = statusBarTempAlpha
+        }
+    }
+
+    /**
+     * 设置导航栏图标为 深色 或 亮色
+     * @param isDarkIcon true深色 false亮色
+     * @param navigationBarAlpha 导航栏透明度，在图标不支持变色时使用
+     */
+    private fun navigationBarDarkIcon(
+        isDarkIcon: Boolean,
+        @FloatRange(from = 0.0, to = 1.0) navigationBarAlpha: Float = 0.2f
+    ) {
+        navigationBarDarkIcon = isDarkIcon
+        if (isDarkIcon && !isSupportNavigationIconDark()) {
+            this.navigationBarAlpha = navigationBarAlpha
+        } else {
+            this.navigationBarAlpha = navigationBarTempAlpha
+        }
+    }
+
 
     class Builder {
         private var statusBarColor: Int = Color.TRANSPARENT
@@ -115,8 +165,8 @@ data class BarConfig(
         private var flymeOSStatusBarFontColor: Int = 0
         private var barHideCode: Int = BarHide.FLAG_SHOW_BAR
         private var hideNavigationBar: Boolean = false
-        private var fits: Boolean = false
-        private var fitsStatusBarType: Int = FitsFlag.DEFAULT
+//        private var fits: Boolean = false
+//        private var fitsStatusBarType: Int = FitsFlag.DEFAULT
         private var contentColor: Int = Color.TRANSPARENT
         private var contentColorTransform: Int = Color.BLACK
         private var contentAlpha: Float = 0.0f
@@ -130,7 +180,7 @@ data class BarConfig(
         private var navigationBarEnable: Boolean = true
         private var navigationBarWithKitkatEnable: Boolean = true
         private var navigationBarWithEMUI3Enable: Boolean = true
-        private var viewAlpha: Float = 0.0f
+        private var viewAlpha: Float? = null
         private var viewMap: HashMap<View, Pair<Int, Int>>? = null
 
         /**
@@ -335,48 +385,48 @@ data class BarConfig(
             return this
         }
 
-        /**
-         * 解决布局与状态栏重叠问题
-         */
-        fun fitsSystemWindows(fits: Boolean): Builder {
-            this.fits = fits
-            if (fits) {
-                if (fitsStatusBarType == FitsFlag.DEFAULT) {
-                    fitsStatusBarType = FitsFlag.SYSTEM_WINDOWS
-                }
-            } else {
-                fitsStatusBarType = FitsFlag.DEFAULT
-            }
-            return this
-        }
+//        /**
+//         * 解决布局与状态栏重叠问题
+//         */
+//        fun fitsSystemWindows(fits: Boolean): Builder {
+//            this.fits = fits
+//            if (fits) {
+//                if (fitsStatusBarType == FitsFlag.DEFAULT) {
+//                    fitsStatusBarType = FitsFlag.SYSTEM_WINDOWS
+//                }
+//            } else {
+//                fitsStatusBarType = FitsFlag.DEFAULT
+//            }
+//            return this
+//        }
 
-        /**
-         *  解决布局与状态栏重叠问题，支持侧滑返回
-         *  @param contentColor 整体界面背景色
-         *  @param contentColorTransform 整体界面变换后的背景色
-         *  @param contentAlpha 整体界面透明度
-         */
-        fun fitsSystemWindows(
-            fits: Boolean,
-            @ColorInt contentColor: Int,
-            @ColorInt contentColorTransform: Int = Color.BLACK,
-            @FloatRange(from = 0.0, to = 1.0) contentAlpha: Float = 0.0f
-        ): Builder {
-            this.fits = fits
-            this.contentColor = contentColor
-            this.contentColorTransform = contentColorTransform
-            this.contentAlpha = contentAlpha
-            if (fits) {
-                if (fitsStatusBarType == FitsFlag.DEFAULT) {
-                    fitsStatusBarType = FitsFlag.SYSTEM_WINDOWS
-                }
-            } else {
-                fitsStatusBarType == FitsFlag.DEFAULT
-            }
-            // TODO mContentView.setBackgroundColor(ColorUtils.blendARGB(mBarParams.contentColor,
-            //                mBarParams.contentColorTransform, mBarParams.contentAlpha));
-            return this
-        }
+//        /**
+//         *  解决布局与状态栏重叠问题，支持侧滑返回
+//         *  @param contentColor 整体界面背景色
+//         *  @param contentColorTransform 整体界面变换后的背景色
+//         *  @param contentAlpha 整体界面透明度
+//         */
+//        fun fitsSystemWindows(
+//            fits: Boolean,
+//            @ColorInt contentColor: Int,
+//            @ColorInt contentColorTransform: Int = Color.BLACK,
+//            @FloatRange(from = 0.0, to = 1.0) contentAlpha: Float = 0.0f
+//        ): Builder {
+//            this.fits = fits
+//            this.contentColor = contentColor
+//            this.contentColorTransform = contentColorTransform
+//            this.contentAlpha = contentAlpha
+//            if (fits) {
+//                if (fitsStatusBarType == FitsFlag.DEFAULT) {
+//                    fitsStatusBarType = FitsFlag.SYSTEM_WINDOWS
+//                }
+//            } else {
+//                fitsStatusBarType == FitsFlag.DEFAULT
+//            }
+//            // TODO mContentView.setBackgroundColor(ColorUtils.blendARGB(mBarParams.contentColor,
+//            //                mBarParams.contentColorTransform, mBarParams.contentAlpha));
+//            return this
+//        }
 
         /**
          * 是否可以修复状态栏与布局重叠，默认为true，
@@ -389,65 +439,65 @@ data class BarConfig(
             return this
         }
 
-        /**
-         * 通过状态栏高度动态设置状态栏布局
-         */
-        fun statusBarView(view: View?): Builder {
-            statusView = view
-            if (statusView != null) {
-                if (fitsStatusBarType == FitsFlag.DEFAULT) {
-                    fitsStatusBarType = FitsFlag.STATUS
-                }
-            } else {
-                if (fitsStatusBarType == FitsFlag.STATUS) {
-                    fitsStatusBarType = FitsFlag.DEFAULT
-                }
-            }
-            return this
-        }
+//        /**
+//         * 通过状态栏高度动态设置状态栏布局
+//         */
+//        fun statusBarView(view: View?): Builder {
+//            statusView = view
+//            if (statusView != null) {
+//                if (fitsStatusBarType == FitsFlag.DEFAULT) {
+//                    fitsStatusBarType = FitsFlag.STATUS
+//                }
+//            } else {
+//                if (fitsStatusBarType == FitsFlag.STATUS) {
+//                    fitsStatusBarType = FitsFlag.DEFAULT
+//                }
+//            }
+//            return this
+//        }
 
-        /**
-         * 解决状态栏与布局顶部重叠又多了种方法
-         * @param statusBarColorTransformEnable 是否可以修改状态栏颜色
-         */
-        fun titleBarView(
-            view: View?,
-            statusBarColorTransformEnable: Boolean = true
-        ): Builder {
-            titleBarView = view
-            if (titleBarView != null) {
-                if (fitsStatusBarType == FitsFlag.DEFAULT
-                    || fitsStatusBarType == FitsFlag.TITLE_MARGIN_TOP) {
-                    fitsStatusBarType = FitsFlag.TITLE
-                }
-            } else {
-                if (fitsStatusBarType == FitsFlag.TITLE
-                    || fitsStatusBarType == FitsFlag.TITLE_MARGIN_TOP) {
-                    fitsStatusBarType = FitsFlag.DEFAULT
-                }
-            }
-            statusBarColorEnabled = statusBarColorTransformEnable
-            return this
-        }
+//        /**
+//         * 解决状态栏与布局顶部重叠又多了种方法
+//         * @param statusBarColorTransformEnable 是否可以修改状态栏颜色
+//         */
+//        fun titleBarView(
+//            view: View?,
+//            statusBarColorTransformEnable: Boolean = true
+//        ): Builder {
+//            titleBarView = view
+//            if (titleBarView != null) {
+//                if (fitsStatusBarType == FitsFlag.DEFAULT
+//                    || fitsStatusBarType == FitsFlag.TITLE_MARGIN_TOP) {
+//                    fitsStatusBarType = FitsFlag.TITLE
+//                }
+//            } else {
+//                if (fitsStatusBarType == FitsFlag.TITLE
+//                    || fitsStatusBarType == FitsFlag.TITLE_MARGIN_TOP) {
+//                    fitsStatusBarType = FitsFlag.DEFAULT
+//                }
+//            }
+//            statusBarColorEnabled = statusBarColorTransformEnable
+//            return this
+//        }
 
-        /**
-         * 绘制标题栏距离顶部的高度为状态栏的高度
-         */
-        fun titleBarMarginTop(view: View?): Builder {
-            titleBarView = view
-            if (titleBarView != null) {
-                if (fitsStatusBarType == FitsFlag.DEFAULT
-                    || fitsStatusBarType == FitsFlag.TITLE) {
-                    fitsStatusBarType = FitsFlag.TITLE_MARGIN_TOP
-                }
-            } else {
-                if (fitsStatusBarType == FitsFlag.TITLE
-                    || fitsStatusBarType == FitsFlag.TITLE) {
-                    fitsStatusBarType = FitsFlag.DEFAULT
-                }
-            }
-            return this
-        }
+//        /**
+//         * 绘制标题栏距离顶部的高度为状态栏的高度
+//         */
+//        fun titleBarMarginTop(view: View?): Builder {
+//            titleBarView = view
+//            if (titleBarView != null) {
+//                if (fitsStatusBarType == FitsFlag.DEFAULT
+//                    || fitsStatusBarType == FitsFlag.TITLE) {
+//                    fitsStatusBarType = FitsFlag.TITLE_MARGIN_TOP
+//                }
+//            } else {
+//                if (fitsStatusBarType == FitsFlag.TITLE
+//                    || fitsStatusBarType == FitsFlag.TITLE) {
+//                    fitsStatusBarType = FitsFlag.DEFAULT
+//                }
+//            }
+//            return this
+//        }
 
         /**
          * 是否可以修改状态栏颜色
@@ -589,8 +639,8 @@ data class BarConfig(
                 flymeOSStatusBarFontColor = flymeOSStatusBarFontColor,
                 barHideCode = barHideCode,
                 hideNavigationBar = hideNavigationBar,
-                fits = fits,
-                fitsStatusBarType = fitsStatusBarType,
+//                fits = fits,
+//                fitsStatusBarType = fitsStatusBarType,
                 contentColor = contentColor,
                 contentColorTransform = contentColorTransform,
                 contentAlpha = contentAlpha,

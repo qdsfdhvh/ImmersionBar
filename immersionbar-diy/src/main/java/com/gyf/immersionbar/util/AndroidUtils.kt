@@ -28,4 +28,7 @@ internal fun Activity.isPortrait(): Boolean {
 /**
  * Android P+
  */
-val isPLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+internal val isPLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+internal val isOLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+internal val isMLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+internal val isLOLLIPOPLater = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
