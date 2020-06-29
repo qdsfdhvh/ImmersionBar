@@ -539,14 +539,15 @@ private fun BarConfig.createTransparentStatusColor(): Int {
 
 /**
  * 生成配置的导航栏颜色
- * PS: 导航栏系统好像不能全透明，目前alpha最小值0.01
+ * PS: 高版本导航栏系统好像不能全透明
  */
 private fun BarConfig.createNavigationColor(): Int {
-    return ColorUtils.blendARGB(
+    val color = ColorUtils.blendARGB(
         navigationBarColor,
         navigationBarColorTransform,
-        if (navigationBarAlpha > 0.01) navigationBarAlpha else 0.01f
+        navigationBarAlpha
     )
+    return if (color == 0) 0x01000000 else color
 }
 
 /**

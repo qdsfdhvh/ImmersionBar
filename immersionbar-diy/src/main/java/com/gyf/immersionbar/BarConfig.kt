@@ -189,7 +189,9 @@ data class BarConfig(
          */
         fun transparentBar(): Builder {
             statusBarColor = Color.TRANSPARENT
+            statusBarColorTransform = Color.TRANSPARENT
             navigationBarColor = Color.TRANSPARENT
+            navigationBarColorTransform = Color.TRANSPARENT
             fullScreen = true
             return this
         }
@@ -595,8 +597,11 @@ data class BarConfig(
             if (viewMap == null) {
                 viewMap = HashMap()
             }
-            viewMap!![view] = if (viewColorBeforeTransform != null && viewColorAfterTransform != null) {
-                viewColorBeforeTransform to viewColorAfterTransform
+            viewMap!![view] = if (viewColorBeforeTransform != null
+                || viewColorAfterTransform != null
+            ) {
+                (viewColorBeforeTransform ?: statusBarColor) to
+                    (viewColorAfterTransform ?: statusBarColorTransform)
             } else null
             return this
         }

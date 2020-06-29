@@ -131,9 +131,9 @@ class MainActivity : BaseActivity(), DrawerListener {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    Glide.with(mActivity!!).resumeRequests()
+                    Glide.with(this@MainActivity).resumeRequests()
                 } else {
-                    Glide.with(mActivity!!).pauseRequests()
+                    Glide.with(this@MainActivity).pauseRequests()
                 }
             }
 
