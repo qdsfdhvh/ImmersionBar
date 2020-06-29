@@ -20,6 +20,10 @@ fun Window.hideStatusBar() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN)
 }
 
+fun Activity.hideStatusBar() {
+    window.hideStatusBar()
+}
+
 /**
  * 显示状态栏
  */
@@ -27,43 +31,66 @@ fun Window.showStatusBar() {
     clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
 }
 
+fun Activity.showStatusBar() {
+    window.showStatusBar()
+}
+
+/**
+ * 获得状态栏的高度
+ */
+val Activity.statusBarHeight get() = getStatusBarHeight()
+
+/**
+ * 获得标题栏的高度
+ */
+val Activity.actionBarHeight get() = getActionBarHeight()
+
+/**
+ * 获得导航栏的高度
+ */
+val Activity.navigationBarHeight get() = getNavigationBarHeight()
+
+/**
+ * 获得导航栏的宽度
+ */
+val Activity.navigationBarWidth get() = getNavigationBarWidth()
+
 /**
  * 获得刘海屏高度
  */
-fun Activity.getNotchHeight(): Int {
-    return getNotchHeight()
-}
+val Activity.notchHeight get() = getNotchHeight()
 
 /**
  * 判断是否是刘海屏
  */
-fun Activity.hasNotchScreen(): Boolean {
-    return hasNotchScreen()
-}
+val Activity.hasNotchScreen get() = hasNotchScreen()
 
 /**
  * 判断是否是刘海屏
  */
-fun View.hasNotchScreen(): Boolean {
-    return hasNotchScreen()
-}
+val View.hasNotchScreen get() = hasNotchScreen()
+
+/**
+ * 判断是否有导航栏
+ */
+val Activity.hasNavigationBar get() = getNavigationBarHeight() > 0
+
+/**
+ * 检查Activity是否使用了android:fitsSystemWindows="true"属性
+ */
+val Activity.checkFitsSystemWindows get() = checkFitsSystemWindows(getContentView())
 
 /**
  * 判断手机是否支持 状态栏 自动变色
  */
-fun isSupportStatusBarDarkFont(): Boolean {
-    return (isMIUI6()
-        or isFlymeOS4()
-        or (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M))
-}
+val isSupportStatusBarDarkFont get() = (isMIUI6() or isFlymeOS4()
+    or (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M))
 
 /**
  * 判断手机是否支持 导航栏 自动变色
  */
-fun isSupportNavigationIconDark(): Boolean {
-    return (isMIUI6()
-        or (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O))
-}
+val isSupportNavigationIconDark get() = (isMIUI6()
+    or (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O))
 
 /**
  * 为 自定义标题栏 paddingTop和高度 增加fixHeight

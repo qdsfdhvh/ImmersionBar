@@ -27,6 +27,8 @@ import io.reactivex.schedulers.Schedulers;
  */
 public class SplashFragment extends BaseFragment implements Observer<Long> {
 
+    private static final String TAG = "SplashFragment";
+
     @BindView(R.id.iv_splash)
     ImageView ivSplash;
     @BindView(R.id.tv_time)
@@ -82,7 +84,7 @@ public class SplashFragment extends BaseFragment implements Observer<Long> {
     @Override
     protected void initView() {
         super.initView();
-        ImmersionBar.setTitleBar(mActivity, tvTime);
+        ImmersionBar.setTitleBar(requireActivity(), tvTime);
         GlideUtils.load(Utils.getFullPic(), ivSplash, R.drawable.pic_all);
     }
 
@@ -102,7 +104,7 @@ public class SplashFragment extends BaseFragment implements Observer<Long> {
      */
     private void finish() {
         if (getFragmentManager() != null) {
-            Fragment fragment = getFragmentManager().findFragmentByTag(mTag);
+            Fragment fragment = getFragmentManager().findFragmentByTag(TAG);
             if (fragment != null) {
                 getFragmentManager().beginTransaction()
                         .setCustomAnimations(R.anim.slide_right_in, R.anim.slide_left_out)

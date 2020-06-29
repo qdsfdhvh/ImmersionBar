@@ -3,7 +3,7 @@ package com.gyf.immersionbar.sample.activity
 import android.os.Bundle
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
-import com.gyf.immersionbar.ktx.immersionBar
+import com.gyf.immersionbar.immersionBar
 import com.gyf.immersionbar.sample.AppManager
 
 /**

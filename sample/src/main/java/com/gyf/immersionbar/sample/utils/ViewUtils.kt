@@ -3,7 +3,7 @@ package com.gyf.immersionbar.sample.utils
 import android.app.Activity
 import android.view.View
 import android.view.ViewGroup
-import com.gyf.immersionbar.util.getStatusBarHeight
+import com.gyf.immersionbar.statusBarHeight
 
 /**
  * @author geyifeng
@@ -16,7 +16,7 @@ object ViewUtils {
             lp = ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         }
         val layoutParams = lp as ViewGroup.MarginLayoutParams
-        layoutParams.height += activity.getStatusBarHeight()
+        layoutParams.height += activity.statusBarHeight
         view.layoutParams = layoutParams
     }
 }

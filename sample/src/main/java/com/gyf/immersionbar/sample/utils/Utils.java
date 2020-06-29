@@ -76,7 +76,9 @@ public class Utils {
 
     public static boolean isNetworkConnected(Context context) {
         if (context != null) {
+            // 使用applicationContext防止内存泄漏
             ConnectivityManager manager = (ConnectivityManager) context
+                    .getApplicationContext()
                     .getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo mNetworkInfo = manager.getActiveNetworkInfo();
             if (mNetworkInfo != null) {

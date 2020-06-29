@@ -7,10 +7,8 @@ import androidx.core.view.ViewCompat
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
-import android.view.View
 import android.widget.TextView
-import android.widget.Toast
-import com.gyf.immersionbar.ktx.*
+import com.gyf.immersionbar.*
 import com.gyf.immersionbar.sample.R
 import kotlinx.android.synthetic.main.activity_params.*
 
@@ -25,18 +23,22 @@ class KotlinActivity : BaseKotlinActivity(R.layout.activity_params) {
     override fun initImmersionBar() {
 //        super.initImmersionBar()
         immersionBar {
-            titleBar(mToolbar)
-            navigationBarColor(R.color.btn13)
-            setOnNavigationBarListener {
-                initView()
-                val text = "导航栏${if (it) {
-                    "显示了"
-                } else {
-                    "隐藏了"
-                }}"
-                Toast.makeText(this@KotlinActivity, text, Toast.LENGTH_SHORT).show()
-            }
+            navigationBarColor(ContextCompat.getColor(this@KotlinActivity, R.color.btn13))
+
         }
+//        immersionBar {
+//            titleBar(mToolbar)
+//            navigationBarColor(R.color.btn13)
+//            setOnNavigationBarListener {
+//                initView()
+//                val text = "导航栏${if (it) {
+//                    "显示了"
+//                } else {
+//                    "隐藏了"
+//                }}"
+//                Toast.makeText(this@KotlinActivity, text, Toast.LENGTH_SHORT).show()
+//            }
+//        }
     }
 
     override fun initData() {
@@ -46,16 +48,16 @@ class KotlinActivity : BaseKotlinActivity(R.layout.activity_params) {
 
     @SuppressLint("SetTextI18n")
     override fun initView() {
-        mTvStatus.text = "${mTvStatus.title}$statusBarHeight".content()
+        mTvStatus.text = "${mTvStatus.title}${statusBarHeight}".content()
         mTvHasNav.text = "${mTvHasNav.title}$hasNavigationBar".content()
-        mTvNav.text = "${mTvNav.title}$navigationBarHeight".content()
-        mTvNavWidth.text = "${mTvNavWidth.title}$navigationBarWidth".content()
-        mTvAction.text = "${mTvAction.title}$actionBarHeight".content()
-        mTvHasNotch.post { mTvHasNotch.text = "${mTvHasNotch.title}$hasNotchScreen".content() }
-        mTvNotchHeight.post { mTvNotchHeight.text = "${mTvNotchHeight.title}$notchHeight".content() }
-        mTvFits.text = "${mTvFits.title}${findViewById<View>(android.R.id.content).checkFitsSystemWindows}".content()
-        mTvStatusDark.text = "${mTvStatusDark.title}$isSupportStatusBarDarkFont".content()
-        mTvNavigationDark.text = "${mTvNavigationDark.title}$isSupportNavigationIconDark".content()
+        mTvNav.text = "${mTvNav.title}${navigationBarHeight}".content()
+        mTvNavWidth.text = "${mTvNavWidth.title}${navigationBarWidth}".content()
+        mTvAction.text = "${mTvAction.title}${actionBarHeight}".content()
+        mTvHasNotch.post { mTvHasNotch.text = "${mTvHasNotch.title}${hasNotchScreen}".content() }
+        mTvNotchHeight.post { mTvNotchHeight.text = "${mTvNotchHeight.title}${notchHeight}".content() }
+        mTvFits.text = "${mTvFits.title}${checkFitsSystemWindows}".content()
+        mTvStatusDark.text = "${mTvStatusDark.title}${isSupportStatusBarDarkFont}".content()
+        mTvNavigationDark.text = "${mTvNavigationDark.title}${isSupportNavigationIconDark}".content()
     }
 
     @SuppressLint("SetTextI18n")

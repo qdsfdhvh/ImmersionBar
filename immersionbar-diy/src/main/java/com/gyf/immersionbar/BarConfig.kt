@@ -122,7 +122,7 @@ data class BarConfig(
         @FloatRange(from = 0.0, to = 1.0) statusBarAlpha: Float = 0.2f
     ) {
         this.statusBarDarkFont = isDarkFont
-        if (isDarkFont && !isSupportStatusBarDarkFont()) {
+        if (isDarkFont && !isSupportStatusBarDarkFont) {
             this.statusBarAlpha = statusBarAlpha
         } else {
             flymeOSStatusBarFontColor = flymeOSStatusBarFontTempColor
@@ -140,7 +140,7 @@ data class BarConfig(
         @FloatRange(from = 0.0, to = 1.0) navigationBarAlpha: Float = 0.2f
     ) {
         navigationBarDarkIcon = isDarkIcon
-        if (isDarkIcon && !isSupportNavigationIconDark()) {
+        if (isDarkIcon && !isSupportNavigationIconDark) {
             this.navigationBarAlpha = navigationBarAlpha
         } else {
             this.navigationBarAlpha = navigationBarTempAlpha
@@ -339,7 +339,7 @@ data class BarConfig(
             @FloatRange(from = 0.0, to = 1.0) statusBarAlpha: Float = 0.2f
         ): Builder {
             statusBarDarkFont = isDarkFont
-            if (isDarkFont && !isSupportStatusBarDarkFont()) {
+            if (isDarkFont && !isSupportStatusBarDarkFont) {
                 this.statusBarAlpha = statusBarAlpha
             }
             return this
@@ -355,7 +355,7 @@ data class BarConfig(
             @FloatRange(from = 0.0, to = 1.0) navigationBarAlpha: Float = 0.2f
         ): Builder {
             navigationBarDarkIcon = isDarkIcon
-            if (isDarkIcon && !isSupportNavigationIconDark()) {
+            if (isDarkIcon && !isSupportNavigationIconDark) {
                 this.navigationBarAlpha = navigationBarAlpha
             }
             return this

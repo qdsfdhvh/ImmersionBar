@@ -1,8 +1,11 @@
-package com.gyf.immersionbar
+package com.gyf.immersionbar.helper
 
 import android.app.Activity
 import android.content.res.Configuration
 import android.view.Surface
+import com.gyf.immersionbar.BarSize
+import com.gyf.immersionbar.hasNotchScreen
+import com.gyf.immersionbar.notchHeight
 
 class PropertiesHelper(
     private val activity: Activity,
@@ -34,13 +37,13 @@ class PropertiesHelper(
     override fun run() {
         val barSize = BarSize.create(activity)
         barProperties.statusBarHeight = barSize.statusBarHeight
-        barProperties.hasNavigationBar = barSize.hasNavigationBar()
+        barProperties.hasNavigationBar = barSize.hasNavigationBar
         barProperties.navigationBarHeight = barSize.navigationHeight
         barProperties.navigationBarWidth = barSize.navigationWidth
         barProperties.actionBarHeight = barSize.actionBarHeight
-        barProperties.notchScreen = activity.hasNotchScreen()
+        barProperties.notchScreen = activity.hasNotchScreen
         if (barProperties.notchScreen) {
-            barProperties.notchHeight = activity.getNotchHeight()
+            barProperties.notchHeight = activity.notchHeight
         }
         callback.invoke(barProperties)
     }

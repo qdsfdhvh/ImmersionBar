@@ -67,9 +67,7 @@ dependencies {
     //圆形imageView
     implementation 'de.hdodenhof:circleimageview:3.0.0'
     // 内存泄漏检测
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.3'
-    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.3'
-    testImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.3'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.3'
     // Fragment框架
     implementation 'me.yokeyword:fragmentationx:1.0.1'
     //腾讯bugly

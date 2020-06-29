@@ -33,7 +33,7 @@ private const val IMMERSION_FITS_LAYOUT_OVERLAP  = 0x11111111
 /**
  * 为 自定义标题栏 paddingTop和高度 增加fixHeight
  */
-fun setTitleBar(@IntRange(from = 0) fixHeight: Int, vararg views: View) {
+internal fun setTitleBar(@IntRange(from = 0) fixHeight: Int, vararg views: View) {
     views.asSequence().filter { v ->
         v.getTag(IMMERSION_FITS_LAYOUT_OVERLAP) as? Int ?: 0 != fixHeight
     }.forEach {  v ->
@@ -72,7 +72,7 @@ fun setTitleBar(@IntRange(from = 0) fixHeight: Int, vararg views: View) {
 /**
  * 为 自定义标题栏 marginTop 增加fixHeight
  */
-fun setTitleBarMarginTop(@IntRange(from = 0) fixHeight: Int, vararg views: View) {
+internal fun setTitleBarMarginTop(@IntRange(from = 0) fixHeight: Int, vararg views: View) {
     views.asSequence().filter { v ->
         v.getTag(IMMERSION_FITS_LAYOUT_OVERLAP) as? Int ?: 0 != fixHeight
     }.forEach { v ->
@@ -95,7 +95,7 @@ fun setTitleBarMarginTop(@IntRange(from = 0) fixHeight: Int, vararg views: View)
 /**
  * 给 自定义状态栏 设置statusBar的高度
  */
-fun setStatusBarView(@IntRange(from = 0) fixHeight: Int, v: View) {
+internal fun setStatusBarView(@IntRange(from = 0) fixHeight: Int, v: View) {
     val fitsHeight = v.getTag(IMMERSION_FITS_LAYOUT_OVERLAP) as? Int ?: 0
     if (fitsHeight == fixHeight) return
 
@@ -111,7 +111,7 @@ fun setStatusBarView(@IntRange(from = 0) fixHeight: Int, v: View) {
 /**
  * 获得状态栏高度
  */
-fun Activity.getStatusBarHeight(): Int {
+internal fun Activity.getStatusBarHeight(): Int {
     return getInternalDimensionSize(STATUS_BAR_HEIGHT)
 }
 
@@ -119,7 +119,7 @@ fun Activity.getStatusBarHeight(): Int {
  * 获得标题栏高度
  */
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-fun Activity.getActionBarHeight(): Int {
+internal fun Activity.getActionBarHeight(): Int {
 //    val actionBar: View? = window.findViewById(R.id.action_bar_container)
 //    if (actionBar != null) {
 //        return actionBar.measuredHeight
@@ -135,7 +135,7 @@ fun Activity.getActionBarHeight(): Int {
  * 获得导航栏宽度
  */
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-fun Activity.getNavigationBarHeight(): Int {
+internal fun Activity.getNavigationBarHeight(): Int {
     if (hasNavigationBar()) {
         return getInternalDimensionSize(if (isPortrait()) {
             NAVIGATION_BAR_HEIGHT
@@ -150,7 +150,7 @@ fun Activity.getNavigationBarHeight(): Int {
  * 获得导航栏宽度
  */
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-fun Activity.getNavigationBarWidth(): Int {
+internal fun Activity.getNavigationBarWidth(): Int {
     if (hasNavigationBar()) {
         return getInternalDimensionSize(NAVIGATION_BAR_WIDTH)
     }

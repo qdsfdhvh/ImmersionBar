@@ -90,7 +90,7 @@ class FitsKeyboard(
         val barSize = bar.barSize
 
         var bottom = 0
-        val navigationBarHeight = if (barSize.isNavigationAtBottom()) {
+        val navigationBarHeight = if (barSize.isNavigationAtBottom) {
             barSize.navigationHeight
         } else {
             barSize.navigationWidth

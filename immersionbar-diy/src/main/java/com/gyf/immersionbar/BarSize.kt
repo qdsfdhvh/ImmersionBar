@@ -12,13 +12,9 @@ class BarSize private constructor(
     val isPortrait: Boolean
 ) {
 
-    fun hasNavigationBar(): Boolean {
-        return navigationHeight > 0
-    }
+    val hasNavigationBar = navigationHeight > 0
 
-    fun isNavigationAtBottom(): Boolean {
-        return smallestWidthDp >= 600 || isPortrait
-    }
+    val isNavigationAtBottom = smallestWidthDp >= 600 || isPortrait
 
     companion object {
         @JvmStatic

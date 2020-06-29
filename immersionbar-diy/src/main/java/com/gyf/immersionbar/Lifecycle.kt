@@ -1,5 +1,6 @@
 package com.gyf.immersionbar
 
+import android.util.Log
 import android.util.SparseArray
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -140,7 +141,8 @@ class ImmersionBarViewModel : ViewModel() {
     }
 
     override fun onCleared() {
-        for (i in 0..map.size()) {
+        Log.d("ImmersionBarViewModel", "onCleared size = ${map.size()}")
+        for (i in 0 until map.size()) {
             map.valueAt(i).onDestroy()
         }
         map.clear()

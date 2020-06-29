@@ -27,7 +27,7 @@ class ImmersionBar(
     internal val isDialog: Boolean = false,
     private val dialog: Dialog? = null,
     private val parent: ImmersionBar? = null
-) {
+) : JavaFun() {
 
     constructor(
         activity: FragmentActivity,
@@ -216,7 +216,7 @@ class ImmersionBar(
         }
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
         // 判断是否存在导航栏
-        if (barSize.hasNavigationBar()) {
+        if (barSize.hasNavigationBar) {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
         }
         // 需要设置这个才能设置状态栏和导航栏颜色
@@ -245,7 +245,7 @@ class ImmersionBar(
         //创建一个假的状态栏
         setupStatusBarView(decorView, barConfig, barSize)
         // 判断是否存在导航栏，是否禁止设置导航栏
-        if (barSize.hasNavigationBar() || isEMUI3x()) {
+        if (barSize.hasNavigationBar || isEMUI3x()) {
             if (barConfig.navigationBarEnable && barConfig.navigationBarWithKitkatEnable) {
                 // 透明导航栏，设置这个，如果有导航栏，底部布局会被导航栏遮住
                 window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
@@ -349,24 +349,24 @@ class ImmersionBar(
         if (barConfig.isSupportActionBar) {
             top = barSize.statusBarHeight + barSize.actionBarHeight
         }
-        if (barSize.hasNavigationBar()
+        if (barSize.hasNavigationBar
             && barConfig.navigationBarEnable
             && barConfig.navigationBarWithKitkatEnable
         ) {
             if (!barConfig.fullScreen) {
-                if (barSize.isNavigationAtBottom()) {
+                if (barSize.isNavigationAtBottom) {
                     bottom = barSize.navigationHeight
                 } else {
                     right = barSize.navigationWidth
                 }
             }
             if (barConfig.hideNavigationBar) {
-                if (barSize.isNavigationAtBottom()) {
+                if (barSize.isNavigationAtBottom) {
                     bottom = 0
                 } else {
                     right = 0
                 }
-            } else if (!barSize.isNavigationAtBottom()) {
+            } else if (!barSize.isNavigationAtBottom) {
                 right = barSize.navigationWidth
             }
         }
@@ -489,7 +489,7 @@ private fun setupNavigationBarView(decorView: ViewGroup, barConfig: BarConfig, b
     }
 
     val params: FrameLayout.LayoutParams
-    if (barSize.isNavigationAtBottom()) {
+    if (barSize.isNavigationAtBottom) {
         params = FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT,
             barSize.navigationHeight
