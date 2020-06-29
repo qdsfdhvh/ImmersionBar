@@ -22,7 +22,7 @@ public class FragmentActivity extends BaseActivity {
     @Override
     protected void initImmersionBar() {
         super.initImmersionBar();
-        ImmersionBar.with(this).titleBar(R.id.toolbar).init();
+        ImmersionBar.setTitleBar(this, findViewById(R.id.toolbar));
     }
 
     @OnClick({R.id.btn_one, R.id.btn_two, R.id.btn_three, R.id.btn_four, R.id.btn_five})

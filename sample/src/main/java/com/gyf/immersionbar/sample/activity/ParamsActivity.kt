@@ -109,10 +109,10 @@ class ParamsActivity : BaseActivity() {
         super.setListener()
         mBtnStatus.setOnClickListener { v: View? ->
             mIsHideStatusBar = if (!mIsHideStatusBar) {
-                window.hideStatusBar()
+                hideStatusBar()
                 true
             } else {
-                window.showStatusBar()
+                showStatusBar()
                 false
             }
         }

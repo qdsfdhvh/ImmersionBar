@@ -95,14 +95,8 @@ class ImmersionBar(
     fun onCreate() {
         // 更新Bar参数
         updateBarParams()
-        // 设置沉浸式
-        setBar()
         // 修正界面显示
         fitsWindows()
-        // 适配软键盘与底部输入冲突问题
-        fitsKeyboard()
-        // 变色View
-        transformView()
         // 初始化完成
         isInitialized = true
     }
@@ -121,15 +115,15 @@ class ImmersionBar(
     }
 
     fun onResume() {
-        if (!isFragment && isInitialized) {
-            if (isEMUI3x() && barConfig.navigationBarWithEMUI3Enable) {
-                onCreate()
-            } else {
-                if (barConfig.barHideCode != BarHide.FLAG_SHOW_BAR) {
-                    setBar()
-                }
-            }
+        if (!isFragment && isEMUI3x() && barConfig.navigationBarWithEMUI3Enable) {
+            onCreate()
         }
+        // 适配软键盘与底部输入冲突问题
+        fitsKeyboard()
+        // 设置沉浸式
+        setBar()
+        // 变色View
+        transformView()
     }
 
     fun onPause() {
@@ -442,6 +436,7 @@ class ImmersionBar(
         // 如果已经初始化，重新加载
         if (isInitialized) {
             onCreate()
+            onResume()
         }
     }
 }

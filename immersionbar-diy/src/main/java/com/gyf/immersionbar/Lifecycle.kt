@@ -113,10 +113,7 @@ fun Fragment.barScope(
     return bar
 }
 
-private val FragmentActivity.barTag: Int
-    get() = System.identityHashCode(this)
-
-private val Fragment.barTag: Int
+private val Any.barTag: Int
     get() = System.identityHashCode(this)
 
 private val factory by lazy {
