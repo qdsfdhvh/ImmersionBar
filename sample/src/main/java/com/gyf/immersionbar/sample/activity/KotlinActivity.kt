@@ -22,6 +22,7 @@ class KotlinActivity : BaseKotlinActivity(R.layout.activity_params) {
 
     override fun initImmersionBar() {
 //        super.initImmersionBar()
+        setTitleBar(mToolbar)
         immersionBar {
             navigationBarColor(ContextCompat.getColor(this@KotlinActivity, R.color.btn13))
 

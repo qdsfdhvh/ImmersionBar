@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Dialog
 import android.graphics.Color
 import android.os.Build
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -214,20 +215,22 @@ class ImmersionBar(
             // Activity全屏显示，但导航栏不会被隐藏覆盖，导航栏依然可见，Activity底部布局部分会被导航栏遮住。
             uiFlags = uiFlags or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
         }
+
+        // 去除'透明状态栏'与'透明导航栏'标记
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        // 判断是否存在导航栏
         if (barSize.hasNavigationBar) {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
         }
+
         // 需要设置这个才能设置状态栏和导航栏颜色
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        // 设置状态栏颜色
+        // 自定义状态栏颜色
         window.statusBarColor = if (barConfig.statusBarColorEnabled) {
             barConfig.createStatusColor()
         } else {
             barConfig.createTransparentStatusColor()
         }
-        // 设置导航栏颜色
+        // 自定义导航栏颜色
         window.navigationBarColor = if (barConfig.navigationBarEnable) {
             barConfig.createNavigationColor()
         } else {
@@ -402,7 +405,7 @@ class ImmersionBar(
      * 变色view
      */
     private fun transformView() {
-        var view: View; var pair: Pair<Int, Int>
+        var view: View; var pair: Pair<Int, Int>?
         barConfig.viewMap?.forEach { entry ->
             view = entry.key
             pair = entry.value
@@ -536,12 +539,13 @@ private fun BarConfig.createTransparentStatusColor(): Int {
 
 /**
  * 生成配置的导航栏颜色
+ * PS: 导航栏系统好像不能全透明，目前alpha最小值0.01
  */
 private fun BarConfig.createNavigationColor(): Int {
     return ColorUtils.blendARGB(
         navigationBarColor,
         navigationBarColorTransform,
-        navigationBarAlpha
+        if (navigationBarAlpha > 0.01) navigationBarAlpha else 0.01f
     )
 }
 
@@ -549,9 +553,9 @@ private fun BarConfig.createNavigationColor(): Int {
  * 生成变色View的颜色
  * @param pair 变化前后的颜色
  */
-private fun BarConfig.createTransformColor(pair: Pair<Int, Int>): Int {
-    val colorBefore = pair.first
-    val colorAfter = pair.second
+private fun BarConfig.createTransformColor(pair: Pair<Int, Int>?): Int {
+    val colorBefore = pair?.first ?: statusBarColor
+    val colorAfter = pair?.second ?: statusBarColorTransform
     return ColorUtils.blendARGB(
         colorBefore,
         colorAfter,

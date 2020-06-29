@@ -128,7 +128,7 @@ private val factory by lazy {
     }
 }
 
-class ImmersionBarViewModel : ViewModel() {
+private class ImmersionBarViewModel : ViewModel() {
 
     private val map = SparseArray<ImmersionBar>()
 

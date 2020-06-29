@@ -67,8 +67,8 @@ data class BarConfig(
     // 整体界面透明度
     @FloatRange(from = 0.0, to = 1.0) val contentAlpha: Float = 0.0f,
 
-    // 是否可以解决标题栏与状态栏重叠问题
-    val fitsLayoutOverlapEnable: Boolean = true,
+//    // 是否可以解决标题栏与状态栏重叠问题
+//    val fitsLayoutOverlapEnable: Boolean = true,
 
 //    // 解决标题栏与状态栏重叠问题
 //    val statusBarView: View? = null,
@@ -95,7 +95,7 @@ data class BarConfig(
     // view透明度
     @FloatRange(from = 0.0, to = 1.0) var viewAlpha: Float? = null,
     // 同步变色的view
-    var viewMap: Map<View, Pair<Int, Int>>? = null
+    var viewMap: Map<View, Pair<Int, Int>?>? = null
 ) {
 
     /**
@@ -171,7 +171,7 @@ data class BarConfig(
         private var contentColor: Int = config?.contentColor ?: Color.TRANSPARENT
         private var contentColorTransform: Int = config?.contentColorTransform ?: Color.BLACK
         private var contentAlpha: Float = config?.contentAlpha ?: 0.0f
-        private var fitsLayoutOverlapEnable: Boolean = config?.fitsLayoutOverlapEnable ?: true
+//        private var fitsLayoutOverlapEnable: Boolean = config?.fitsLayoutOverlapEnable ?: true
 //        private var statusView: View? = null
 //        private var titleBarView: View? = null
         private var statusBarColorEnabled: Boolean = config?.statusBarColorEnabled ?: true
@@ -182,7 +182,7 @@ data class BarConfig(
         private var navigationBarWithKitkatEnable: Boolean = config?.navigationBarWithKitkatEnable ?: true
         private var navigationBarWithEMUI3Enable: Boolean = config?.navigationBarWithEMUI3Enable ?: true
         private var viewAlpha: Float? = config?.viewAlpha
-        private var viewMap: MutableMap<View, Pair<Int, Int>>? = config?.viewMap?.toMutableMap()
+        private var viewMap: MutableMap<View, Pair<Int, Int>?>? = config?.viewMap?.toMutableMap()
 
         /**
          * 透明状态栏和导航栏
@@ -216,10 +216,10 @@ data class BarConfig(
          */
         fun statusBarColor(
             @ColorInt color: Int,
-            @FloatRange(from = 0.0, to = 1.0) alpha: Float = 1f
+            @FloatRange(from = 0.0, to = 1.0) alpha: Float? = null
         ): Builder {
             statusBarColor = color
-            statusBarAlpha = alpha
+            alpha?.let { statusBarAlpha = it }
             return this
         }
 
@@ -228,10 +228,10 @@ data class BarConfig(
          */
         fun navigationBarColor(
             @ColorInt color: Int,
-            @FloatRange(from = 0.0, to = 1.0) alpha: Float = 1f
+            @FloatRange(from = 0.0, to = 1.0) alpha: Float? = null
         ): Builder {
             navigationBarColor = color
-            navigationBarAlpha = alpha
+            alpha?.let { navigationBarAlpha = it }
             return this
         }
 
@@ -428,18 +428,18 @@ data class BarConfig(
 //            //                mBarParams.contentColorTransform, mBarParams.contentAlpha));
 //            return this
 //        }
-
-        /**
-         * 是否可以修复状态栏与布局重叠，默认为true，
-         * 只适合ImmersionBar#statusBarView，
-         *      ImmersionBar#titleBar，
-         *      ImmersionBar#titleBarMarginTop
-         */
-        fun fitsLayoutOverlapEnable(enable: Boolean): Builder {
-            fitsLayoutOverlapEnable = enable
-            return this
-        }
-
+//
+//        /**
+//         * 是否可以修复状态栏与布局重叠，默认为true，
+//         * 只适合ImmersionBar#statusBarView，
+//         *      ImmersionBar#titleBar，
+//         *      ImmersionBar#titleBarMarginTop
+//         */
+//        fun fitsLayoutOverlapEnable(enable: Boolean): Builder {
+//            fitsLayoutOverlapEnable = enable
+//            return this
+//        }
+//
 //        /**
 //         * 通过状态栏高度动态设置状态栏布局
 //         */
@@ -589,13 +589,15 @@ data class BarConfig(
          */
         fun addViewSupportTransformColor(
             view: View,
-            @ColorInt viewColorBeforeTransform: Int = statusBarColor,
-            @ColorInt viewColorAfterTransform: Int = statusBarColorTransform
+            @ColorInt viewColorBeforeTransform: Int? = null,
+            @ColorInt viewColorAfterTransform: Int? = null
         ): Builder {
             if (viewMap == null) {
                 viewMap = HashMap()
             }
-            viewMap!![view] = viewColorBeforeTransform to viewColorAfterTransform
+            viewMap!![view] = if (viewColorBeforeTransform != null && viewColorAfterTransform != null) {
+                viewColorBeforeTransform to viewColorAfterTransform
+            } else null
             return this
         }
 
@@ -645,7 +647,7 @@ data class BarConfig(
                 contentColor = contentColor,
                 contentColorTransform = contentColorTransform,
                 contentAlpha = contentAlpha,
-                fitsLayoutOverlapEnable = fitsLayoutOverlapEnable,
+//                fitsLayoutOverlapEnable = fitsLayoutOverlapEnable,
 //                statusBarView = statusView,
 //                titleBarView = titleBarView,
                 statusBarColorEnabled = statusBarColorEnabled,

@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -21,6 +20,8 @@ import butterknife.OnClick
 import com.bumptech.glide.Glide
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.gyf.immersionbar.*
+import com.gyf.immersionbar.helper.BarProperties
+import com.gyf.immersionbar.helper.PropertiesHelper
 import com.gyf.immersionbar.sample.AppManager
 import com.gyf.immersionbar.sample.BuildConfig
 import com.gyf.immersionbar.sample.R
@@ -34,7 +35,6 @@ import com.gyf.immersionbar.sample.utils.DensityUtil
 import com.gyf.immersionbar.sample.utils.GlideUtils
 import com.gyf.immersionbar.sample.utils.Utils
 import com.gyf.immersionbar.sample.utils.ViewUtils
-import com.gyf.immersionbar.util.getStatusBarHeight
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -63,18 +63,19 @@ class MainActivity : BaseActivity(), DrawerListener {
     /**
      * splash页面
      */
-    private var mSplashFragment: SplashFragment? = null
+
     private lateinit var mMainAdapter: MainAdapter
     private lateinit var mBannerAdapter: BannerAdapter
+
     private var mLayoutManager: LinearLayoutManager? = null
     private var mNetworkView: View? = null
     private var mBannerHeight: Int = 0
     private var mBannerPosition = -1
-    private var mFirstPressedTime: Long = 0
+
     private lateinit var mIvBanner: ImageView
     private var mMainData: ArrayList<FunBean>? = null
 
-    private lateinit var propertiesHelper: PropertiesHelper
+    private var propertiesHelper: PropertiesHelper? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -84,6 +85,7 @@ class MainActivity : BaseActivity(), DrawerListener {
 
     override fun onDestroy() {
         super.onDestroy()
+        propertiesHelper = null
         drawer.removeDrawerListener(this)
         EventBus.getDefault().unregister(this)
     }
@@ -97,7 +99,7 @@ class MainActivity : BaseActivity(), DrawerListener {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        propertiesHelper.onConfigurationChanged(newConfig)
+        propertiesHelper?.onConfigurationChanged(newConfig)
     }
 
     override fun initData() {
@@ -117,7 +119,7 @@ class MainActivity : BaseActivity(), DrawerListener {
         mRv.adapter = mMainAdapter
         mMainAdapter.setNewData(mMainData)
         addHeaderView()
-        mBannerHeight = DensityUtil.dip2px(this, 180f) - getStatusBarHeight()
+        mBannerHeight = DensityUtil.dip2px(this, 180f) - statusBarHeight
         propertiesHelper = PropertiesHelper(this, this::adjustView)
     }
 
@@ -216,18 +218,24 @@ class MainActivity : BaseActivity(), DrawerListener {
      */
     private fun showSplash() {
         val transaction = supportFragmentManager.beginTransaction()
-        mSplashFragment = supportFragmentManager.findFragmentByTag(SplashFragment::class.java.simpleName) as SplashFragment?
+        var mSplashFragment = supportFragmentManager
+            .findFragmentByTag(SplashFragment::class.java.simpleName) as SplashFragment?
         if (mSplashFragment != null) {
-            if (mSplashFragment!!.isAdded) {
-                transaction.show(mSplashFragment!!).commitAllowingStateLoss()
-            } else {
-                transaction.remove(mSplashFragment!!).commitAllowingStateLoss()
+            if (mSplashFragment.isAdded) {
+                transaction.show(mSplashFragment).commitAllowingStateLoss()
+            }
+            else {
+                transaction.remove(mSplashFragment)
                 mSplashFragment = SplashFragment.newInstance()
-                transaction.add(R.id.fl_content, mSplashFragment!!, SplashFragment::class.java.simpleName).commitAllowingStateLoss()
+                transaction
+                    .add(R.id.fl_content, mSplashFragment, SplashFragment::class.java.simpleName)
+                    .commitAllowingStateLoss()
             }
         } else {
             mSplashFragment = SplashFragment.newInstance()
-            transaction.add(R.id.fl_content, mSplashFragment!!, SplashFragment::class.java.simpleName).commitAllowingStateLoss()
+            transaction
+                .add(R.id.fl_content, mSplashFragment, SplashFragment::class.java.simpleName)
+                .commitAllowingStateLoss()
         }
         mSplashFragment!!.setOnSplashListener { time: Long, totalTime: Long ->
             if (time != 0L) {
@@ -319,23 +327,8 @@ class MainActivity : BaseActivity(), DrawerListener {
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START)
         } else {
-            if (mSplashFragment != null) {
-                if (mSplashFragment!!.isFinish) {
-                    if (System.currentTimeMillis() - mFirstPressedTime < 2000) {
-                        super.onBackPressed()
-                        AppManager.getInstance().removeAllActivity()
-                    } else {
-                        Toast.makeText(this, "再按一次退出", Toast.LENGTH_SHORT).show()
-                        mFirstPressedTime = System.currentTimeMillis()
-                    }
-                } else {
-                    super.onBackPressed()
-                    AppManager.getInstance().removeAllActivity()
-                }
-            } else {
-                super.onBackPressed()
-                AppManager.getInstance().removeAllActivity()
-            }
+            super.onBackPressed()
+            AppManager.getInstance().removeAllActivity()
         }
     }
 
