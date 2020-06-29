@@ -28,6 +28,25 @@ class ImmersionBar(
     private val dialog: Dialog? = null,
     private val parent: ImmersionBar? = null
 ) {
+
+    constructor(
+        activity: FragmentActivity,
+        builder: BarConfig.Builder.() -> Unit,
+        isFragment: Boolean = false,
+        fragment: Fragment? = null,
+        isDialog: Boolean = false,
+        dialog: Dialog? = null,
+        parent: ImmersionBar? = null
+    ) : this(
+        activity = activity,
+        barConfig =  BarConfig.Builder().apply(builder).build(),
+        isFragment = isFragment,
+        fragment = fragment,
+        isDialog = isDialog,
+        dialog = dialog,
+        parent = parent
+    )
+
     /**
      * Bar尺寸
      */
@@ -408,6 +427,19 @@ class ImmersionBar(
         paddingTop = top
         paddingRight = right
         paddingBottom = bottom
+    }
+
+    /**
+     * 更新配置
+     */
+    fun update(builder: BarConfig.Builder.() -> Unit) {
+        barConfig = BarConfig.Builder(barConfig)
+            .apply(builder)
+            .build()
+        // 如果已经初始化，重新加载
+        if (isInitialized) {
+            onCreate()
+        }
     }
 }
 

@@ -28,13 +28,13 @@ private const val NAVIGATION_BAR_HEIGHT_LANDSCAPE = "navigation_bar_height_lands
 /**
  * view 设置高度时的tag标记
  */
-private const val IMMERSION_FITS_LAYOUT_OVERLAP  = 0x111
+private const val IMMERSION_FITS_LAYOUT_OVERLAP  = 0x11111111
 
 /**
  * 为 自定义标题栏 paddingTop和高度 增加fixHeight
  */
 fun setTitleBar(@IntRange(from = 0) fixHeight: Int, vararg views: View) {
-    views.filter { v ->
+    views.asSequence().filter { v ->
         v.getTag(IMMERSION_FITS_LAYOUT_OVERLAP) as? Int ?: 0 != fixHeight
     }.forEach {  v ->
         v.setTag(IMMERSION_FITS_LAYOUT_OVERLAP, fixHeight)
@@ -73,7 +73,7 @@ fun setTitleBar(@IntRange(from = 0) fixHeight: Int, vararg views: View) {
  * 为 自定义标题栏 marginTop 增加fixHeight
  */
 fun setTitleBarMarginTop(@IntRange(from = 0) fixHeight: Int, vararg views: View) {
-    views.filter { v ->
+    views.asSequence().filter { v ->
         v.getTag(IMMERSION_FITS_LAYOUT_OVERLAP) as? Int ?: 0 != fixHeight
     }.forEach { v ->
         v.setTag(IMMERSION_FITS_LAYOUT_OVERLAP, fixHeight)
@@ -120,10 +120,10 @@ fun Activity.getStatusBarHeight(): Int {
  */
 @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
 fun Activity.getActionBarHeight(): Int {
-    val actionBar: View? = window.findViewById(R.id.action_bar_container)
-    if (actionBar != null) {
-        return actionBar.measuredHeight
-    }
+//    val actionBar: View? = window.findViewById(R.id.action_bar_container)
+//    if (actionBar != null) {
+//        return actionBar.measuredHeight
+//    }
     val typedValue = TypedValue()
     theme.resolveAttribute(android.R.attr.actionBarSize,
         typedValue, true)
@@ -169,12 +169,24 @@ internal fun Activity.getSmallestWidthDp(): Float {
  * 界面中是否有导航栏
  */
 private fun Activity.hasNavigationBar(): Boolean {
-    // 判断小米手机是否开启了全面屏，开启了，直接返回false
-    if (getGlobalBool(MIUI_NAVIGATION_BAR_HIDE_SHOW)) {
+    // 判断华为手机是否隐藏了导航栏，隐藏了，直接返回false
+    if (getGlobalBool(NAVIGATION_BAR_MODE_EMUI)) {
         return false
     }
-    // 判断华为手机是否隐藏了导航栏，隐藏了，直接返回false
-    if (isEMUI() && getGlobalBool(EMUI_NAVIGATION_BAR_HIDE_SHOW)) {
+    // 判断小米手机是否开启了全面屏，开启了，直接返回false
+    if (getGlobalBool(NAVIGATION_BAR_MODE_MIUI)) {
+        return false
+    }
+    // 判断VIVO手机是否开启了全面屏，开启了，直接返回false
+    if (getGlobalBool(NAVIGATION_BAR_MODE_VIVO)) {
+        return false
+    }
+    // 判断OPPO手机是否开启了全面屏，开启了，直接返回false
+    if (getGlobalBool(NAVIGATION_BAR_MODE_OPPO)) {
+        return false
+    }
+    // 判断SAMSUNG手机是否开启了全面屏，开启了，直接返回false
+    if (getGlobalBool(NAVIGATION_BAR_MODE_SAMSUNG)) {
         return false
     }
 
@@ -196,7 +208,7 @@ private fun Activity.hasNavigationBar(): Boolean {
 }
 
 private fun Activity.getGlobalBool(key: String): Boolean {
-    return Settings.Global.getInt(contentResolver, key) != 0
+    return Settings.Global.getInt(contentResolver, key, 0) != 0
 }
 
 private fun Context.getInternalDimensionSize(key: String): Int {

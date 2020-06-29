@@ -70,10 +70,10 @@ data class BarConfig(
     // 是否可以解决标题栏与状态栏重叠问题
     val fitsLayoutOverlapEnable: Boolean = true,
 
-    // 解决标题栏与状态栏重叠问题
-    val statusBarView: View? = null,
-    // 解决标题栏与状态栏重叠问题v2
-    val titleBarView: View? = null,
+//    // 解决标题栏与状态栏重叠问题
+//    val statusBarView: View? = null,
+//    // 解决标题栏与状态栏重叠问题v2
+//    val titleBarView: View? = null,
     // 是否可以修改状态栏颜色
     val statusBarColorEnabled: Boolean = true,
 
@@ -148,40 +148,41 @@ data class BarConfig(
     }
 
 
-    class Builder {
-        private var statusBarColor: Int = Color.TRANSPARENT
-        private var statusBarColorTransform: Int = Color.BLACK
-        private var statusBarAlpha: Float = 0.0f
-        private var navigationBarColor: Int = Color.BLACK
-        private var navigationBarColorTransform: Int = Color.BLACK
-        private var navigationBarAlpha: Float = 0.0f
-        private var fullScreen: Boolean = false
-        private var autoStatusBarDarkModeEnable: Boolean = false
-        private var autoStatusBarDarkModeAlpha: Float = 1.0f
-        private var autoNavigationBarDarkModeEnable: Boolean = false
-        private var autoNavigationBarDarkModeAlpha: Float = 1.0f
-        private var statusBarDarkFont: Boolean = false
-        private var navigationBarDarkIcon: Boolean = false
-        private var flymeOSStatusBarFontColor: Int = 0
-        private var barHideCode: Int = BarHide.FLAG_SHOW_BAR
-        private var hideNavigationBar: Boolean = false
+    class Builder(config: BarConfig? = null) {
+
+        private var statusBarColor: Int = config?.statusBarColor ?: Color.TRANSPARENT
+        private var statusBarColorTransform: Int = config?.statusBarColorTransform ?: Color.BLACK
+        private var statusBarAlpha: Float = config?.statusBarAlpha ?: 0.0f
+        private var navigationBarColor: Int = config?.navigationBarColor ?: Color.BLACK
+        private var navigationBarColorTransform: Int = config?.navigationBarColorTransform ?: Color.BLACK
+        private var navigationBarAlpha: Float = config?.navigationBarAlpha ?: 0.0f
+        private var fullScreen: Boolean = config?.fullScreen ?: false
+        private var autoStatusBarDarkModeEnable: Boolean = config?.autoStatusBarDarkModeEnable ?: false
+        private var autoStatusBarDarkModeAlpha: Float = config?.autoStatusBarDarkModeAlpha ?: 1.0f
+        private var autoNavigationBarDarkModeEnable: Boolean = config?.autoNavigationBarDarkModeEnable ?: false
+        private var autoNavigationBarDarkModeAlpha: Float = config?.autoNavigationBarDarkModeAlpha ?: 1.0f
+        private var statusBarDarkFont: Boolean = config?.statusBarDarkFont ?: false
+        private var navigationBarDarkIcon: Boolean = config?.navigationBarDarkIcon ?: false
+        private var flymeOSStatusBarFontColor: Int = config?.flymeOSStatusBarFontColor ?: 0
+        private var barHideCode: Int = config?.barHideCode ?: BarHide.FLAG_SHOW_BAR
+        private var hideNavigationBar: Boolean = config?.hideNavigationBar ?: false
 //        private var fits: Boolean = false
 //        private var fitsStatusBarType: Int = FitsFlag.DEFAULT
-        private var contentColor: Int = Color.TRANSPARENT
-        private var contentColorTransform: Int = Color.BLACK
-        private var contentAlpha: Float = 0.0f
-        private var fitsLayoutOverlapEnable: Boolean = true
-        private var statusView: View? = null
-        private var titleBarView: View? = null
-        private var statusBarColorEnabled: Boolean = true
-        private var isSupportActionBar: Boolean = false
-        private var keyboardEnable: Boolean = false
-        private var keyboardMode: Int = DEFAULT_KEYBOARD_MODE
-        private var navigationBarEnable: Boolean = true
-        private var navigationBarWithKitkatEnable: Boolean = true
-        private var navigationBarWithEMUI3Enable: Boolean = true
-        private var viewAlpha: Float? = null
-        private var viewMap: HashMap<View, Pair<Int, Int>>? = null
+        private var contentColor: Int = config?.contentColor ?: Color.TRANSPARENT
+        private var contentColorTransform: Int = config?.contentColorTransform ?: Color.BLACK
+        private var contentAlpha: Float = config?.contentAlpha ?: 0.0f
+        private var fitsLayoutOverlapEnable: Boolean = config?.fitsLayoutOverlapEnable ?: true
+//        private var statusView: View? = null
+//        private var titleBarView: View? = null
+        private var statusBarColorEnabled: Boolean = config?.statusBarColorEnabled ?: true
+        private var isSupportActionBar: Boolean = config?.isSupportActionBar ?: false
+        private var keyboardEnable: Boolean = config?.keyboardEnable ?: false
+        private var keyboardMode: Int = config?.keyboardMode ?: DEFAULT_KEYBOARD_MODE
+        private var navigationBarEnable: Boolean = config?.navigationBarEnable ?: true
+        private var navigationBarWithKitkatEnable: Boolean = config?.navigationBarWithKitkatEnable ?: true
+        private var navigationBarWithEMUI3Enable: Boolean = config?.navigationBarWithEMUI3Enable ?: true
+        private var viewAlpha: Float? = config?.viewAlpha
+        private var viewMap: MutableMap<View, Pair<Int, Int>>? = config?.viewMap?.toMutableMap()
 
         /**
          * 透明状态栏和导航栏
@@ -645,8 +646,8 @@ data class BarConfig(
                 contentColorTransform = contentColorTransform,
                 contentAlpha = contentAlpha,
                 fitsLayoutOverlapEnable = fitsLayoutOverlapEnable,
-                statusBarView = statusView,
-                titleBarView = titleBarView,
+//                statusBarView = statusView,
+//                titleBarView = titleBarView,
                 statusBarColorEnabled = statusBarColorEnabled,
                 isSupportActionBar = isSupportActionBar,
                 keyboardEnable = keyboardEnable,

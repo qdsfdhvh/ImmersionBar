@@ -1,38 +1,57 @@
 package com.gyf.immersionbar
 
+import android.util.SparseArray
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
 
-val FragmentActivity.immersionBar: ImmersionBar
-    get() = barScope {
-        ImmersionBar(
-            activity = this
-        ).apply { bindLifecycle(lifecycle) }
-    }
+fun FragmentActivity.immersionBar(builder: BarConfig.Builder.() -> Unit = {}): ImmersionBar {
+    return barScope(
+        creator = {
+            ImmersionBar(
+                activity = this,
+                builder = builder
+            )
+        },
+        onCreated = { it.bindLifecycle(lifecycle) },
+        onUpdate = { it.update(builder) }
+    )
+}
 
-val Fragment.immersionBar: ImmersionBar
-    get() = requireActivity().barScope {
-        ImmersionBar(
-            activity = requireActivity(),
-            isFragment = true,
-            fragment = this,
-            parent = requireActivity().immersionBar
-        ).apply { bindLifecycle(lifecycle) }
-    }
+fun Fragment.immersionBar(builder: BarConfig.Builder.() -> Unit = {}): ImmersionBar {
+    return barScope(
+        creator = {
+            ImmersionBar(
+                activity = requireActivity(),
+                builder = builder,
+                isFragment = true,
+                fragment = this,
+                parent = requireActivity().immersionBar()
+            )
+        },
+        onCreated = { it.bindLifecycle(lifecycle) },
+        onUpdate = { it.update(builder) }
+    )
+}
 
-val DialogFragment.immersionBar: ImmersionBar
-    get() = requireActivity().barScope {
-        ImmersionBar(
-            activity = requireActivity(),
-            isFragment = true,
-            fragment = this,
-            isDialog = true,
-            dialog = requireDialog(),
-            parent = requireActivity().immersionBar
-        ).apply { bindLifecycle(lifecycle) }
-    }
+fun DialogFragment.immersionBar(builder: BarConfig.Builder.() -> Unit = {}): ImmersionBar {
+    return barScope(
+        creator = {
+            ImmersionBar(
+                activity = requireActivity(),
+                barConfig = BarConfig.Builder().apply(builder).build(),
+                isFragment = true,
+                fragment = this,
+                isDialog = true,
+                dialog = requireDialog(),
+                parent = requireActivity().immersionBar()
+            )
+        },
+        onCreated = { it.bindLifecycle(lifecycle) },
+        onUpdate = { it.update(builder) }
+    )
+}
 
 fun ImmersionBar.bindLifecycle(lifecycle: Lifecycle) {
     lifecycle.addObserver(object : LifecycleEventObserver {
@@ -57,19 +76,47 @@ fun ImmersionBar.bindLifecycle(lifecycle: Lifecycle) {
     })
 }
 
-fun FragmentActivity.barScope(creator: () -> ImmersionBar): ImmersionBar {
+fun FragmentActivity.barScope(
+    creator: () -> ImmersionBar,
+    onCreated: (ImmersionBar) -> Unit,
+    onUpdate: (ImmersionBar) -> Unit
+): ImmersionBar {
     val viewModel = ViewModelProvider(this, factory)
             .get(ImmersionBarViewModel::class.java)
-    var bar = viewModel.get(tag)
+    var bar = viewModel.get(barTag)
     if (bar == null) {
         bar = creator()
-        viewModel.put(tag, bar)
+        viewModel.put(barTag, bar)
+        onCreated(bar)
+    } else {
+        onUpdate(bar)
     }
     return bar
 }
 
-private val FragmentActivity.tag: String
-    get() = "ImmersionBar" + System.identityHashCode(this)
+fun Fragment.barScope(
+    creator: () -> ImmersionBar,
+    onCreated: (ImmersionBar) -> Unit,
+    onUpdate: (ImmersionBar) -> Unit
+): ImmersionBar {
+    val viewModel = ViewModelProvider(this, factory)
+        .get(ImmersionBarViewModel::class.java)
+    var bar = viewModel.get(barTag)
+    if (bar == null) {
+        bar = creator()
+        viewModel.put(barTag, bar)
+        onCreated(bar)
+    } else {
+        onUpdate(bar)
+    }
+    return bar
+}
+
+private val FragmentActivity.barTag: Int
+    get() = System.identityHashCode(this)
+
+private val Fragment.barTag: Int
+    get() = System.identityHashCode(this)
 
 private val factory by lazy {
     object : ViewModelProvider.Factory {
@@ -82,16 +129,20 @@ private val factory by lazy {
 
 class ImmersionBarViewModel : ViewModel() {
 
-    private val map = HashMap<String, ImmersionBar>()
+    private val map = SparseArray<ImmersionBar>()
 
-    fun put(key: String, bar: ImmersionBar) {
-        map.put(key, bar)?.onDestroy()
+    fun put(key: Int, bar: ImmersionBar) {
+        map.put(key, bar)
     }
 
-    fun get(key: String) = map[key]
+    fun get(key: Int): ImmersionBar? {
+        return map[key]
+    }
 
     override fun onCleared() {
-        map.values.forEach { it.onDestroy() }
+        for (i in 0..map.size()) {
+            map.valueAt(i).onDestroy()
+        }
         map.clear()
     }
 }
