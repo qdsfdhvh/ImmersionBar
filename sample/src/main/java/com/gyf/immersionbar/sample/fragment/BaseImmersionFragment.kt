@@ -68,9 +68,9 @@ abstract class BaseImmersionFragment : Fragment() {
     protected abstract val layoutId: Int
 
     protected open fun initImmersionBar() {
-        immersionBar {
-            keyboardEnable(true)
-        }
+//        immersionBar {
+//            keyboardEnable(true)
+//        }
     }
 
     /**

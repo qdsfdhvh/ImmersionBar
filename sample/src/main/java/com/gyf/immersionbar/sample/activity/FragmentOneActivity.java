@@ -133,8 +133,9 @@ public class FragmentOneActivity extends BaseActivity implements View.OnClickLis
     }
 
     private class MyAdapter extends FragmentPagerAdapter {
+
         MyAdapter(FragmentManager fm) {
-            super(fm);
+            super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         }
 
         @Override

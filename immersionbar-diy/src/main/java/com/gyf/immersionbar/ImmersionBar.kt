@@ -26,8 +26,8 @@ class ImmersionBar(
     internal val isFragment: Boolean = false,
     private val fragment: Fragment? = null,
     internal val isDialog: Boolean = false,
-    private val dialog: Dialog? = null,
-    private val parent: ImmersionBar? = null
+    private val dialog: Dialog? = null
+//    private val parent: ImmersionBar? = null
 ) : JavaFun() {
 
     constructor(
@@ -36,16 +36,16 @@ class ImmersionBar(
         isFragment: Boolean = false,
         fragment: Fragment? = null,
         isDialog: Boolean = false,
-        dialog: Dialog? = null,
-        parent: ImmersionBar? = null
+        dialog: Dialog? = null
+//        parent: ImmersionBar? = null
     ) : this(
         activity = activity,
         barConfig =  BarConfig.Builder().apply(builder).build(),
         isFragment = isFragment,
         fragment = fragment,
         isDialog = isDialog,
-        dialog = dialog,
-        parent = parent
+        dialog = dialog
+//        parent = parent
     )
 
     /**
@@ -68,13 +68,15 @@ class ImmersionBar(
     /**
      * 软键盘适配
      */
-    private var keyboardTempEnable: Boolean = false
+//    private var keyboardTempEnable: Boolean = false
     private var fitsKeyboard: FitsKeyboard? = null
 
     /**
-     * 是否已经初始化
+     * 状态
      */
-    private var isInitialized = false
+    private var isCreated = false
+    private var isResumed = false
+
 
     internal var paddingLeft = 0
     internal var paddingTop = 0
@@ -98,20 +100,20 @@ class ImmersionBar(
         // 修正界面显示
         fitsWindows()
         // 初始化完成
-        isInitialized = true
+        isCreated = true
     }
 
     fun onDestroy() {
         cancelListener()
-        if (isDialog) {
-            parent?.let {
-                it.barConfig.keyboardEnable = barConfig.keyboardEnable
-                if (it.barConfig.barHideCode != BarHide.FLAG_SHOW_BAR) {
-                    it.setBar()
-                }
-            }
-        }
-        isInitialized = false
+//        if (isDialog) {
+//            parent?.let {
+//                it.barConfig.keyboardEnable = barConfig.keyboardEnable
+//                if (it.barConfig.barHideCode != BarHide.FLAG_SHOW_BAR) {
+//                    it.setBar()
+//                }
+//            }
+//        }
+        isCreated = false
     }
 
     fun onResume() {
@@ -124,10 +126,20 @@ class ImmersionBar(
         setBar()
         // 变色View
         transformView()
+
+        fitsKeyboard?.let {
+            Log.d("ImmersionBar", "开启FitsKeyboard $this")
+            it.enable(barConfig.keyboardMode)
+        }
+        isResumed = true
     }
 
     fun onPause() {
-        // nothing to do
+        fitsKeyboard?.let {
+            Log.d("ImmersionBar", "关闭FitsKeyboard $this")
+            it.disable()
+        }
+        isResumed = false
     }
 
     /**
@@ -138,19 +150,19 @@ class ImmersionBar(
         barConfig.adjustDarkModeParams()
         // 更新BarSize
         updateBarConfig()
-        parent?.let {
-            // 如果在Fragment中使用，让Activity同步Fragment的BarParams参数
-            if (isFragment) {
-                it.barConfig = barConfig
-            }
-            // 如果dialog里设置了keyboardEnable为true，
-            // 则Activity中所设置的keyboardEnable为false
-            if (isDialog) {
-                if (it.keyboardTempEnable) {
-                    it.barConfig.keyboardEnable = false
-                }
-            }
-        }
+//        parent?.let {
+//            // 如果在Fragment中使用，让Activity同步Fragment的BarParams参数
+//            if (isFragment) {
+//                it.barConfig = barConfig
+//            }
+//            // 如果dialog里设置了keyboardEnable为true，
+//            // 则Activity中所设置的keyboardEnable为false
+//            if (isDialog) {
+//                if (it.keyboardTempEnable) {
+//                    it.barConfig.keyboardEnable = false
+//                }
+//            }
+//        }
     }
 
     /**
@@ -169,7 +181,7 @@ class ImmersionBar(
         var uiFlags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         if (isLOLLIPOPLater && !isEMUI3x()) {
             // 适配刘海屏 安卓P 以上
-            if (isPLater && !isInitialized) {
+            if (isPLater && !isCreated) {
                 window.fitsNotchScreen()
             }
             // 初始化5.0以上，包含5.0
@@ -200,7 +212,7 @@ class ImmersionBar(
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private fun initBarAboveLOLLIPOP(flag: Int): Int {
         var uiFlags = flag
-        if (!isInitialized) {
+        if (!isCreated) {
             navigationBarColorDefault = window.navigationBarColor
         }
         // Activity全屏显示，但状态栏不会被隐藏覆盖，状态栏依然可见，Activity顶端布局部分会被状态栏遮住。
@@ -290,7 +302,7 @@ class ImmersionBar(
      * android 5.0以上解决状态栏和布局重叠问题
      */
     private fun fitsWindowsAboveLOLLIPOP() {
-        updateBarConfig()
+//        updateBarConfig()
         if (checkFitsSystemWindows(contentView)) {
             setPadding(0, 0, 0, 0)
             return
@@ -320,7 +332,7 @@ class ImmersionBar(
     }
 
     private fun postFitsWindowsBelowLOLLIPOP() {
-        updateBarConfig()
+//        updateBarConfig()
         // 解决android4.4有导航栏的情况下，
         // activity底部被导航栏遮挡的问题和android 5.0以下解决状态栏和布局重叠问题
         fitsWindowsKITKAT()
@@ -386,13 +398,24 @@ class ImmersionBar(
      * 解决底部输入框与软键盘问题
      */
     private fun fitsKeyboard() {
-        if (!isFragment) {
-            if (barConfig.keyboardEnable) {
-                if (fitsKeyboard == null) {
-                    fitsKeyboard = FitsKeyboard(this)
-                }
+        if (barConfig.keyboardEnable) {
+            if (fitsKeyboard == null) {
+                Log.d("ImmersionBar", "创建FitsKeyboard $this")
+                fitsKeyboard = FitsKeyboard(this)
             }
         }
+//            fitsKeyboard!!.enable(barConfig.keyboardMode)
+//        } else {
+//            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+//        }
+//        if (barConfig.keyboardEnable) {
+//            if (fitsKeyboard == null) {
+//                fitsKeyboard = FitsKeyboard(this)
+//            }
+//            fitsKeyboard!!.enable(barConfig.keyboardMode)
+//        } else {
+//            fitsKeyboard?.disable()
+//        }
     }
 
     /**
@@ -411,10 +434,10 @@ class ImmersionBar(
      * 取消 软键盘监听 和 emui3.x导航栏监听
      */
     private fun cancelListener() {
-        fitsKeyboard?.let {
-            it.cancel()
-            fitsKeyboard = null
-        }
+//        fitsKeyboard?.let {
+//            it.cancel()
+//            fitsKeyboard = null
+//        }
         // TODO EMUI3NavigationBarObserver removeOnNavigationBarListener
     }
 
@@ -434,9 +457,11 @@ class ImmersionBar(
             .apply(builder)
             .build()
         // 如果已经初始化，重新加载
-        if (isInitialized) {
+        if (isCreated) {
             onCreate()
-            onResume()
+            if (isResumed) {
+                onResume()
+            }
         }
     }
 }

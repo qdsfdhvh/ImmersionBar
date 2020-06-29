@@ -27,8 +27,8 @@ fun Fragment.immersionBar(builder: BarConfig.Builder.() -> Unit = {}): Immersion
                 activity = requireActivity(),
                 builder = builder,
                 isFragment = true,
-                fragment = this,
-                parent = requireActivity().immersionBar()
+                fragment = this
+//                parent = requireActivity().immersionBar()
             )
         },
         onCreated = { it.bindLifecycle(lifecycle) },
@@ -45,8 +45,8 @@ fun DialogFragment.immersionBar(builder: BarConfig.Builder.() -> Unit = {}): Imm
                 isFragment = true,
                 fragment = this,
                 isDialog = true,
-                dialog = requireDialog(),
-                parent = requireActivity().immersionBar()
+                dialog = requireDialog()
+//                parent = requireActivity().immersionBar()
             )
         },
         onCreated = { it.bindLifecycle(lifecycle) },

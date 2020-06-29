@@ -16,6 +16,7 @@ class CategoryOneFragment : BaseImmersionFragment() {
     public override fun initImmersionBar() {
         super.initImmersionBar()
         immersionBar {
+            keyboardEnable(true)
             statusBarDarkFont(true, 0.2f)
             navigationBarColor(getResColor(R.color.btn3))
         }

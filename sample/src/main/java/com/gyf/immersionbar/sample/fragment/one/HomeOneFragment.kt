@@ -165,8 +165,8 @@ class HomeOneFragment : BaseImmersionFragment() {
 
     public override fun initImmersionBar() {
         immersionBar {
-            statusBarColorTransformEnable(false)
             keyboardEnable(false)
+            statusBarColorTransformEnable(false)
             navigationBarColor(getResColor(R.color.colorPrimary))
         }
     }

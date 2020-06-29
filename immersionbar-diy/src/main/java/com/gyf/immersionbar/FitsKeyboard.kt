@@ -2,6 +2,7 @@ package com.gyf.immersionbar
 
 import android.graphics.Rect
 import android.os.Build
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
@@ -31,11 +32,12 @@ class FitsKeyboard(
     private var tempKeyboardHeight = 0
 
     init {
-        childView = if (bar.isFragment) {
-            bar.requireFragment().view
-        } else {
-            contentView.getChildAt(0)
-        }
+        childView = contentView.getChildAt(0)
+//        childView = if (bar.isFragment) {
+//            bar.requireFragment().view
+//        } else {
+//            contentView.getChildAt(0)
+//        }
         childView?.let {
             if (it is DrawerLayout) {
                 childView = it.getChildAt(0)
@@ -60,27 +62,6 @@ class FitsKeyboard(
 
     fun disable() {
         if (isAddListener) {
-            val view = childView
-            if (view != null) {
-                paddingView.setPadding(
-                    paddingLeft,
-                    paddingTop,
-                    paddingRight,
-                    paddingBottom
-                )
-            } else {
-                paddingView.setPadding(
-                    bar.paddingLeft,
-                    bar.paddingTop,
-                    bar.paddingRight,
-                    bar.paddingBottom
-                )
-            }
-        }
-    }
-
-    fun cancel() {
-        if (isAddListener) {
             decorView.viewTreeObserver.removeOnGlobalLayoutListener(this)
             isAddListener = false
         }
@@ -95,7 +76,7 @@ class FitsKeyboard(
         } else {
             barSize.navigationWidth
         }
-        var isPop = false
+        var isPopup = false
 
         val rect = Rect()
         decorView.getWindowVisibleDisplayFrame(rect)
@@ -112,7 +93,7 @@ class FitsKeyboard(
 //                    }
                     if (keyboardHeight > navigationBarHeight) {
                         bottom = keyboardHeight + paddingBottom
-                        isPop = true
+                        isPopup = true
                     }
                     paddingView.setPadding(
                         paddingLeft,
@@ -125,7 +106,7 @@ class FitsKeyboard(
                     keyboardHeight -= navigationBarHeight
                     if (keyboardHeight > navigationBarHeight) {
                         bottom = keyboardHeight + navigationBarHeight
-                        isPop = true
+                        isPopup = true
                     }
                     paddingView.setPadding(
                         bar.paddingLeft,
@@ -137,14 +118,15 @@ class FitsKeyboard(
             } else {
                 keyboardHeight -= navigationBarHeight
                 if (keyboardHeight > navigationBarHeight) {
-                    isPop = true
+                    isPopup = true
                 }
             }
             if (keyboardHeight < 0) {
                 keyboardHeight = 0
             }
             // TODO keyboard change listener
-            if (!isPop && bar.barConfig.barHideCode != BarHide.FLAG_SHOW_BAR) {
+            Log.d("ImmersionBar", "onKeyboardChange: isPopup=$isPopup keyboardHeight=$keyboardHeight $bar")
+            if (!isPopup && bar.barConfig.barHideCode != BarHide.FLAG_SHOW_BAR) {
                 bar.setBar()
             }
         }

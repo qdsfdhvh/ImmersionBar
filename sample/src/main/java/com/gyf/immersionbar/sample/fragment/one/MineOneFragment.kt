@@ -16,6 +16,7 @@ class MineOneFragment : BaseImmersionFragment() {
     public override fun initImmersionBar() {
         super.initImmersionBar()
         immersionBar {
+            keyboardEnable(true)
             statusBarDarkFont(true)
             navigationBarColor(getResColor(R.color.btn1))
             navigationBarDarkIcon(true)
