@@ -42,7 +42,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'com.google.android.material:material:1.0.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
 //    implementation project(':immersionbar')
 //    implementation project(':immersionbar-components')
 //    implementation project(':immersionbar-ktx')
@@ -60,8 +60,8 @@ dependencies {
     //RecyclerView框架
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.47'
     //图片加载框架
-    implementation 'com.github.bumptech.glide:glide:4.9.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     //下拉刷新上拉加载
     implementation 'com.lcodecorex:tkrefreshlayout:1.0.7'
     //圆形imageView
@@ -69,11 +69,11 @@ dependencies {
     // 内存泄漏检测
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.3'
     // Fragment框架
-    implementation 'me.yokeyword:fragmentationx:1.0.1'
+    implementation 'me.yokeyword:fragmentationx:1.0.2'
     //腾讯bugly
-    implementation 'com.tencent.bugly:crashreport:2.8.6'
+    implementation 'com.tencent.bugly:crashreport:3.1.0'
     // Rx
-    implementation "io.reactivex.rxjava2:rxjava:2.2.8"
+    implementation "io.reactivex.rxjava2:rxjava:2.2.10"
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
     // EventBus
     implementation 'org.greenrobot:eventbus:3.1.1'
