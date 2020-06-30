@@ -19,7 +19,7 @@ class ImmersionBar(
     private val activity: FragmentActivity,
     builder: BarConfig.Builder.() -> Unit,
     internal val window: Window = activity.window
-) : JavaFun() {
+) {
 
     /**
      * Bar配置

@@ -25,6 +25,7 @@ import com.gyf.immersionbar.helper.BarProperties
 import com.gyf.immersionbar.helper.PropertiesHelper
 import com.gyf.immersionbar.sample.AppManager
 import com.gyf.immersionbar.sample.BuildConfig
+import com.gyf.immersionbar.sample.OnSplashListener
 import com.gyf.immersionbar.sample.R
 import com.gyf.immersionbar.sample.adapter.BannerAdapter
 import com.gyf.immersionbar.sample.adapter.MainAdapter
@@ -291,13 +292,13 @@ class MainActivity : BaseActivity(), DrawerListener {
                 .add(R.id.fl_content, mSplashFragment, SplashFragment::class.java.simpleName)
                 .commitAllowingStateLoss()
         }
-        mSplashFragment!!.setOnSplashListener { time: Long, totalTime: Long ->
+        mSplashFragment.setOnSplashListener(OnSplashListener { time, _ ->
             if (time != 0L) {
                 drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
             } else {
                 drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
             }
-        }
+        })
     }
 
     private fun addHeaderView() {
