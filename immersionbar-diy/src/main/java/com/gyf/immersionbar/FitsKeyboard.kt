@@ -22,9 +22,11 @@ object FitsKeyboardManager {
 
     fun add(keyboard: FitsKeyboard?) {
         if (keyboard == null) return
-        backStack.lastOrNull()?.let {
-            it.disable()
-            Log.d("ImmersionBar", "关闭FitsKeyboard ${it.bar}")
+        val last = backStack.lastOrNull()
+        if (last != null) {
+            if (last == keyboard) return
+            last.disable()
+            Log.d("ImmersionBar", "关闭FitsKeyboard ${last.bar}")
         }
         if (backStack.add(keyboard)) {
             keyboard.enable()
@@ -118,9 +120,9 @@ class FitsKeyboard(
             tempKeyboardHeight = keyboardHeight
             if (checkFitsSystemWindows(contentView)) {
                 if (childView != null) {
-                    if (bar.barConfig.isSupportActionBar) {
-                        keyboardHeight += barSize.actionBarHeight + barSize.statusBarHeight
-                    }
+//                    if (bar.barConfig.isSupportActionBar) {
+//                        keyboardHeight += barSize.actionBarHeight + barSize.statusBarHeight
+//                    }
 //                    if (bar.barConfig.fits) {
 //                        keyboardHeight += barSize.statusBarHeight
 //                    }

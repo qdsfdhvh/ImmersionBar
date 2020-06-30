@@ -371,6 +371,7 @@ class ImmersionBar(
             }
         } else {
             fitsKeyboard?.let {
+                Log.d("ImmersionBar", "注销FitsKeyboard $this")
                 FitsKeyboardManager.pop(it)
                 fitsKeyboard = null
             }
