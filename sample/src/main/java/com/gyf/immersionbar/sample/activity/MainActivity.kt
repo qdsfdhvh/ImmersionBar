@@ -20,6 +20,7 @@ import butterknife.OnClick
 import com.bumptech.glide.Glide
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.gyf.immersionbar.*
+import com.gyf.immersionbar.annotation.BarHide
 import com.gyf.immersionbar.helper.BarProperties
 import com.gyf.immersionbar.helper.PropertiesHelper
 import com.gyf.immersionbar.sample.AppManager
@@ -31,10 +32,7 @@ import com.gyf.immersionbar.sample.bean.FunBean
 import com.gyf.immersionbar.sample.event.NetworkEvent
 import com.gyf.immersionbar.sample.fragment.SplashFragment
 import com.gyf.immersionbar.sample.model.DataUtils
-import com.gyf.immersionbar.sample.utils.DensityUtil
-import com.gyf.immersionbar.sample.utils.GlideUtils
-import com.gyf.immersionbar.sample.utils.Utils
-import com.gyf.immersionbar.sample.utils.ViewUtils
+import com.gyf.immersionbar.sample.utils.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -184,6 +182,30 @@ class MainActivity : BaseActivity(), DrawerListener {
                 20 -> intent = Intent(this, LoginActivity::class.java)
                 21 -> intent = Intent(this, WhiteBarActivity::class.java)
                 22 -> intent = Intent(this, AutoDarkModeActivity::class.java)
+                23 -> {
+                    immersionBar {
+                        hideBar(BarHide.FLAG_HIDE_STATUS_BAR)
+                    }
+                }
+                24 -> {
+                    if (hasNavigationBar) {
+                        immersionBar {
+                            hideBar(BarHide.FLAG_HIDE_NAVIGATION_BAR)
+                        }
+                    } else {
+                        toast("当前设备没有导航栏或者导航栏已经被隐藏或者低于4.4系统")
+                    }
+                }
+                25 -> {
+                    immersionBar {
+                        hideBar(BarHide.FLAG_HIDE_BAR)
+                    }
+                }
+                26 -> {
+                    immersionBar {
+                        hideBar(BarHide.FLAG_SHOW_BAR)
+                    }
+                }
                 else -> {
                 }
             }

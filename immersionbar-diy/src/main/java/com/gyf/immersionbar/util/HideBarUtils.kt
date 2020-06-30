@@ -7,7 +7,7 @@ import com.gyf.immersionbar.annotation.BarHide
  * 隐藏或显示状态栏和导航栏。
  */
 internal fun hideBarFlag(@BarHide code: Int, uiFlags: Int): Int {
-    return when(code) {
+    val flag = when(code) {
         BarHide.FLAG_HIDE_BAR -> {
             uiFlags or (View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
@@ -26,4 +26,5 @@ internal fun hideBarFlag(@BarHide code: Int, uiFlags: Int): Int {
         }
         else -> uiFlags
     }
+    return flag or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
 }
