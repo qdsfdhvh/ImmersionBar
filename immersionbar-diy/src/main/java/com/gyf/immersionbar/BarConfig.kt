@@ -55,8 +55,8 @@ data class BarConfig(
     // 是否隐藏导航栏
     val hideNavigationBar: Boolean = false,
 
-//    // 解决标题栏与状态栏重叠问题
-//    val fits: Boolean = false,
+    // 解决标题栏与状态栏重叠问题
+    val fits: Boolean = false,
 //    // 当前顶部布局和状态栏重叠是以哪种方式适配的
 //    @FitsFlag val fitsStatusBarType: Int = FitsFlag.DEFAULT,
 
@@ -166,7 +166,7 @@ data class BarConfig(
         private var flymeOSStatusBarFontColor: Int = config?.flymeOSStatusBarFontColor ?: 0
         private var barHideCode: Int = config?.barHideCode ?: BarHide.FLAG_SHOW_BAR
         private var hideNavigationBar: Boolean = config?.hideNavigationBar ?: false
-//        private var fits: Boolean = false
+        private var fits: Boolean = false
 //        private var fitsStatusBarType: Int = FitsFlag.DEFAULT
         private var contentColor: Int = config?.contentColor ?: Color.TRANSPARENT
         private var contentColorTransform: Int = config?.contentColorTransform ?: Color.BLACK
@@ -388,11 +388,11 @@ data class BarConfig(
             return this
         }
 
-//        /**
-//         * 解决布局与状态栏重叠问题
-//         */
-//        fun fitsSystemWindows(fits: Boolean): Builder {
-//            this.fits = fits
+        /**
+         * 解决布局与状态栏重叠问题
+         */
+        fun fitsSystemWindows(fits: Boolean): Builder {
+            this.fits = fits
 //            if (fits) {
 //                if (fitsStatusBarType == FitsFlag.DEFAULT) {
 //                    fitsStatusBarType = FitsFlag.SYSTEM_WINDOWS
@@ -400,8 +400,8 @@ data class BarConfig(
 //            } else {
 //                fitsStatusBarType = FitsFlag.DEFAULT
 //            }
-//            return this
-//        }
+            return this
+        }
 
 //        /**
 //         *  解决布局与状态栏重叠问题，支持侧滑返回
@@ -647,7 +647,7 @@ data class BarConfig(
                 flymeOSStatusBarFontColor = flymeOSStatusBarFontColor,
                 barHideCode = barHideCode,
                 hideNavigationBar = hideNavigationBar,
-//                fits = fits,
+                fits = fits,
 //                fitsStatusBarType = fitsStatusBarType,
                 contentColor = contentColor,
                 contentColorTransform = contentColorTransform,

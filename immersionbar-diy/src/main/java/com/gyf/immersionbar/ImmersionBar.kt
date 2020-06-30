@@ -278,6 +278,9 @@ class ImmersionBar(
 //        if (barConfig.fits && barConfig.fitsStatusBarType == FitsFlag.SYSTEM_WINDOWS) {
 //            top = barSize.statusBarHeight
 //        }
+        if (barConfig.fits) {
+            top = barSize.statusBarHeight
+        }
         if (barConfig.isSupportActionBar) {
             top = barSize.statusBarHeight + barSize.actionBarHeight
         }
@@ -321,6 +324,9 @@ class ImmersionBar(
 //        if (barConfig.fits && barConfig.fitsStatusBarType == FitsFlag.SYSTEM_WINDOWS) {
 //            top = barSize.statusBarHeight
 //        }
+        if (barConfig.fits) {
+            top = barSize.statusBarHeight
+        }
         if (barConfig.isSupportActionBar) {
             top = barSize.statusBarHeight + barSize.actionBarHeight
         }
