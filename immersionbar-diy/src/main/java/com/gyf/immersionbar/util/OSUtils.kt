@@ -22,14 +22,14 @@ private fun getSystemProperty(key: String, defaultValue: String = ""): String {
 /**
  * 设备是否为MIUI
  */
-internal fun isMIUI(): Boolean {
+fun isMIUI(): Boolean {
     return getSystemProperty(KEY_MIUI_VERSION_NAME).isNotEmpty()
 }
 
 /**
  * 设备是否为MIUI 6+
  */
-internal fun isMIUI6(): Boolean {
+fun isMIUI6(): Boolean {
     val version = getSystemProperty(KEY_MIUI_VERSION_NAME)
     if (version.isEmpty()) {
         return false
@@ -41,14 +41,14 @@ internal fun isMIUI6(): Boolean {
 /**
  * 设备是否为EMUI
  */
-internal fun isEMUI(): Boolean {
+fun isEMUI(): Boolean {
     return getSystemProperty(KEY_EMUI_VERSION_NAME).isNotEmpty()
 }
 
 /**
  * 设备是否为EMUI 3.1
  */
-internal fun isEMUI31(): Boolean {
+fun isEMUI31(): Boolean {
     val version = getSystemProperty(KEY_EMUI_VERSION_NAME)
     if (version.isEmpty()) {
         return false
@@ -60,7 +60,7 @@ internal fun isEMUI31(): Boolean {
 /**
  * 设备是否为EMUI 3.0
  */
-internal fun isEMUI30(): Boolean {
+fun isEMUI30(): Boolean {
     val version = getSystemProperty(KEY_EMUI_VERSION_NAME)
     if (version.isEmpty()) {
         return false
@@ -71,7 +71,7 @@ internal fun isEMUI30(): Boolean {
 /**
  * 设备是否为EMUI 3.x
  */
-internal fun isEMUI3x(): Boolean {
+fun isEMUI3x(): Boolean {
     val version = getSystemProperty(KEY_EMUI_VERSION_NAME)
     if (version.isEmpty()) {
         return false
@@ -84,14 +84,14 @@ internal fun isEMUI3x(): Boolean {
 /**
  * 设备是否为FlymeOS
  */
-internal fun isFlymeOS(): Boolean {
+fun isFlymeOS(): Boolean {
     return getSystemProperty(KEY_DISPLAY).contains("flyme", ignoreCase = true)
 }
 
 /**
  * 设备是否为FlymeOS 4.0+
  */
-internal fun isFlymeOS4(): Boolean {
+fun isFlymeOS4(): Boolean {
     val version = getSystemProperty(KEY_DISPLAY)
     if (!version.contains("flyme", ignoreCase = true)) {
         return false
