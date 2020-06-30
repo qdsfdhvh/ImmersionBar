@@ -1,5 +1,6 @@
 package com.gyf.immersionbar
 
+import android.app.Dialog
 import android.util.Log
 import android.util.SparseArray
 import androidx.fragment.app.DialogFragment
@@ -7,53 +8,83 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.*
 
-fun FragmentActivity.immersionBar(builder: BarConfig.Builder.() -> Unit = {}): ImmersionBar {
-    return barScope(
-        creator = {
-            ImmersionBar(
-                activity = this,
-                builder = builder
-            )
-        },
-        onCreated = { it.bindLifecycle(lifecycle) },
-        onUpdate = { it.update(builder) }
+/**
+ * 注销Dialog的ImmersionBar
+ * PS:Dialog关闭时需要主动注销
+ */
+fun Dialog.destroyBar(activity: FragmentActivity) {
+    val viewModel = activity.getImmersionBarViewModel()
+    viewModel.remove(barTag)
+}
+
+fun Dialog.destroyBar(fragment: Fragment) {
+    val viewModel = fragment.getImmersionBarViewModel()
+    viewModel.remove(barTag)
+}
+
+/**
+ * 创建Dialog的ImmersionBar
+ */
+fun Dialog.immersionBar(
+    activity: FragmentActivity,
+    builder: BarConfig.Builder.() -> Unit
+): ImmersionBar {
+    return activity.barScope(
+        creator = { ImmersionBar(activity, builder, window!!) },
+        onCreated = { it.bindLifecycle(activity.lifecycle) },
+        onUpdate = { it.update(builder) },
+        tag = this.barTag
     )
 }
 
-fun Fragment.immersionBar(builder: BarConfig.Builder.() -> Unit = {}): ImmersionBar {
-    return barScope(
-        creator = {
-            ImmersionBar(
-                activity = requireActivity(),
-                builder = builder,
-                isFragment = true,
-                fragment = this
-//                parent = requireActivity().immersionBar()
-            )
-        },
-        onCreated = { it.bindLifecycle(lifecycle) },
-        onUpdate = { it.update(builder) }
+fun Dialog.immersionBar(
+    fragment: Fragment,
+    builder: BarConfig.Builder.() -> Unit
+): ImmersionBar {
+    return fragment.barScope(
+        creator = { ImmersionBar(fragment.requireActivity(), builder, window!!) },
+        onCreated = { it.bindLifecycle(fragment.lifecycle) },
+        onUpdate = { it.update(builder) },
+        tag = this.barTag
     )
 }
 
+/**
+ * 创建DialogFragment的ImmersionBar
+ */
 fun DialogFragment.immersionBar(builder: BarConfig.Builder.() -> Unit = {}): ImmersionBar {
     return barScope(
-        creator = {
-            ImmersionBar(
-                activity = requireActivity(),
-                barConfig = BarConfig.Builder().apply(builder).build(),
-                isFragment = true,
-                fragment = this,
-                isDialog = true,
-                dialog = requireDialog()
-//                parent = requireActivity().immersionBar()
-            )
-        },
+        creator = { ImmersionBar(requireActivity(), builder, requireDialog().window!!) },
         onCreated = { it.bindLifecycle(lifecycle) },
         onUpdate = { it.update(builder) }
     )
 }
 
+/**
+ * 创建Fragment的ImmersionBar
+ */
+fun Fragment.immersionBar(builder: BarConfig.Builder.() -> Unit = {}): ImmersionBar {
+    return barScope(
+        creator = { ImmersionBar(requireActivity(),builder) },
+        onCreated = { it.bindLifecycle(lifecycle) },
+        onUpdate = { it.update(builder) }
+    )
+}
+
+/**
+ * 创建FragmentActivity的ImmersionBar
+ */
+fun FragmentActivity.immersionBar(builder: BarConfig.Builder.() -> Unit = {}): ImmersionBar {
+    return barScope(
+        creator = { ImmersionBar(this, builder) },
+        onCreated = { it.bindLifecycle(lifecycle) },
+        onUpdate = { it.update(builder) }
+    )
+}
+
+/**
+ * 为ImmersionBar绑定生命周期
+ */
 fun ImmersionBar.bindLifecycle(lifecycle: Lifecycle) {
     lifecycle.addObserver(object : LifecycleEventObserver {
         override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
@@ -80,14 +111,14 @@ fun ImmersionBar.bindLifecycle(lifecycle: Lifecycle) {
 fun FragmentActivity.barScope(
     creator: () -> ImmersionBar,
     onCreated: (ImmersionBar) -> Unit,
-    onUpdate: (ImmersionBar) -> Unit
+    onUpdate: (ImmersionBar) -> Unit,
+    tag: Int = barTag
 ): ImmersionBar {
-    val viewModel = ViewModelProvider(this, factory)
-            .get(ImmersionBarViewModel::class.java)
-    var bar = viewModel.get(barTag)
+    val viewModel = getImmersionBarViewModel()
+    var bar = viewModel.get(tag)
     if (bar == null) {
         bar = creator()
-        viewModel.put(barTag, bar)
+        viewModel.put(tag, bar)
         onCreated(bar)
     } else {
         onUpdate(bar)
@@ -98,19 +129,24 @@ fun FragmentActivity.barScope(
 fun Fragment.barScope(
     creator: () -> ImmersionBar,
     onCreated: (ImmersionBar) -> Unit,
-    onUpdate: (ImmersionBar) -> Unit
+    onUpdate: (ImmersionBar) -> Unit,
+    tag: Int = barTag
 ): ImmersionBar {
-    val viewModel = ViewModelProvider(this, factory)
-        .get(ImmersionBarViewModel::class.java)
-    var bar = viewModel.get(barTag)
+    val viewModel = getImmersionBarViewModel()
+    var bar = viewModel.get(tag)
     if (bar == null) {
         bar = creator()
-        viewModel.put(barTag, bar)
+        viewModel.put(tag, bar)
         onCreated(bar)
     } else {
         onUpdate(bar)
     }
     return bar
+}
+
+private fun ViewModelStoreOwner.getImmersionBarViewModel(): ImmersionBarViewModel {
+    return ViewModelProvider(this, factory)
+        .get(ImmersionBarViewModel::class.java)
 }
 
 private val Any.barTag: Int
@@ -135,6 +171,11 @@ private class ImmersionBarViewModel : ViewModel() {
 
     fun get(key: Int): ImmersionBar? {
         return map[key]
+    }
+
+    fun remove(key: Int) {
+        map[key]?.onDestroy()
+        map.remove(key)
     }
 
     override fun onCleared() {

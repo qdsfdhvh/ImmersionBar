@@ -1,8 +1,6 @@
 package com.gyf.immersionbar.sample.fragment.dialog;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -16,7 +14,6 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.gyf.immersionbar.ImmersionBar;
 import com.gyf.immersionbar.sample.AppManager;
 import com.gyf.immersionbar.sample.R;
 import com.gyf.immersionbar.sample.utils.Utils;
@@ -34,17 +31,9 @@ import butterknife.Unbinder;
  */
 public abstract class BaseDialogFragment extends DialogFragment {
 
-    protected Activity mActivity;
-    protected View mRootView;
     protected Window mWindow;
     private Unbinder unbinder;
     public Integer[] mWidthAndHeight;
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        mActivity = (Activity) context;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,8 +55,7 @@ public abstract class BaseDialogFragment extends DialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mRootView = inflater.inflate(setLayoutId(), container, false);
-        return mRootView;
+        return inflater.inflate(setLayoutId(), container, false);
     }
 
 
@@ -79,14 +67,14 @@ public abstract class BaseDialogFragment extends DialogFragment {
             initImmersionBar();
         }
         initData();
-        initView();
+        initView(view);
         setListener();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        AppManager.getInstance().hideSoftKeyBoard(mActivity);
+        AppManager.getInstance().hideSoftKeyBoard(requireActivity());
     }
 
     @Override
@@ -120,23 +108,19 @@ public abstract class BaseDialogFragment extends DialogFragment {
     /**
      * 初始化沉浸式
      */
-    protected void initImmersionBar() {
-        ImmersionBar.with(this).init();
-    }
+    protected void initImmersionBar() {}
 
 
     /**
      * 初始化数据
      */
-    protected void initData() {
-
-    }
+    protected void initData() {}
 
     /**
      * view与数据绑定
      */
-    protected void initView() {
-        ImageView iv = mRootView.findViewById(R.id.mIv);
+    protected void initView(@NonNull View view) {
+        ImageView iv = view.findViewById(R.id.mIv);
         if (iv != null) {
             Glide.with(this).asBitmap().load(Utils.getPic())
                     .apply(new RequestOptions().placeholder(R.mipmap.test))
@@ -147,7 +131,5 @@ public abstract class BaseDialogFragment extends DialogFragment {
     /**
      * 设置监听
      */
-    protected void setListener() {
-
-    }
+    protected void setListener() {}
 }

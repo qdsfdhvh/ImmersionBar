@@ -5,10 +5,7 @@ import android.app.Dialog
 import android.graphics.Color
 import android.os.Build
 import android.util.Log
-import android.view.Gravity
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import android.widget.FrameLayout
 import androidx.annotation.ColorInt
 import androidx.annotation.RequiresApi
@@ -19,51 +16,23 @@ import com.gyf.immersionbar.annotation.BarHide
 import com.gyf.immersionbar.util.*
 
 class ImmersionBar(
-    // Activity宿主
     private val activity: FragmentActivity,
-    // Bar配置
-    internal var barConfig: BarConfig = BarConfig(),
-    internal val isFragment: Boolean = false,
-    private val fragment: Fragment? = null,
-    internal val isDialog: Boolean = false,
-    private val dialog: Dialog? = null
-//    private val parent: ImmersionBar? = null
+    builder: BarConfig.Builder.() -> Unit,
+    internal val window: Window = activity.window
 ) : JavaFun() {
 
-    constructor(
-        activity: FragmentActivity,
-        builder: BarConfig.Builder.() -> Unit,
-        isFragment: Boolean = false,
-        fragment: Fragment? = null,
-        isDialog: Boolean = false,
-        dialog: Dialog? = null
-//        parent: ImmersionBar? = null
-    ) : this(
-        activity = activity,
-        barConfig =  BarConfig.Builder().apply(builder).build(),
-        isFragment = isFragment,
-        fragment = fragment,
-        isDialog = isDialog,
-        dialog = dialog
-//        parent = parent
-    )
+    /**
+     * Bar配置
+     */
+    internal var barConfig = BarConfig.Builder().apply(builder).build()
 
     /**
      * Bar尺寸
      */
     internal lateinit var barSize: BarSize
 
-    internal val window = activity.window
     internal val decorView = window.decorView as ViewGroup
     private val contentView = decorView.getContentView()
-
-    internal fun requireFragment(): Fragment {
-        return fragment ?: throw IllegalStateException("ImmersionBar $this does not have any fragment.")
-    }
-
-    internal fun requireDialog(): Dialog {
-        return dialog ?: throw IllegalStateException("ImmersionBar $this does not have any dialog.")
-    }
 
     /**
      * 软键盘适配
@@ -103,21 +72,8 @@ class ImmersionBar(
         isCreated = true
     }
 
-    fun onDestroy() {
-        cancelListener()
-//        if (isDialog) {
-//            parent?.let {
-//                it.barConfig.keyboardEnable = barConfig.keyboardEnable
-//                if (it.barConfig.barHideCode != BarHide.FLAG_SHOW_BAR) {
-//                    it.setBar()
-//                }
-//            }
-//        }
-        isCreated = false
-    }
-
     fun onResume() {
-        if (!isFragment && isEMUI3x() && barConfig.navigationBarWithEMUI3Enable) {
+        if (isEMUI3x() && barConfig.navigationBarWithEMUI3Enable) {
             onCreate()
         }
         // 适配软键盘与底部输入冲突问题
@@ -127,19 +83,29 @@ class ImmersionBar(
         // 变色View
         transformView()
 
-        fitsKeyboard?.let {
-            Log.d("ImmersionBar", "开启FitsKeyboard $this")
-            it.enable(barConfig.keyboardMode)
-        }
+        FitsKeyboardManager.add(fitsKeyboard)
         isResumed = true
     }
 
     fun onPause() {
-        fitsKeyboard?.let {
-            Log.d("ImmersionBar", "关闭FitsKeyboard $this")
-            it.disable()
-        }
+        FitsKeyboardManager.pop(fitsKeyboard)
         isResumed = false
+    }
+
+    fun onDestroy() {
+        if (isResumed) {
+            onPause()
+        }
+//        cancelListener()
+//        if (isDialog) {
+//            parent?.let {
+//                it.barConfig.keyboardEnable = barConfig.keyboardEnable
+//                if (it.barConfig.barHideCode != BarHide.FLAG_SHOW_BAR) {
+//                    it.setBar()
+//                }
+//            }
+//        }
+        isCreated = false
     }
 
     /**
@@ -337,7 +303,7 @@ class ImmersionBar(
         // activity底部被导航栏遮挡的问题和android 5.0以下解决状态栏和布局重叠问题
         fitsWindowsKITKAT()
         // 解决华为emui3.1或者3.0导航栏手动隐藏的问题
-        if (!isFragment && isEMUI3x()) {
+        if (isEMUI3x()) {
             fitsWindowsEMUI()
         }
     }
@@ -430,16 +396,16 @@ class ImmersionBar(
         }
     }
 
-    /**
-     * 取消 软键盘监听 和 emui3.x导航栏监听
-     */
-    private fun cancelListener() {
-//        fitsKeyboard?.let {
-//            it.cancel()
-//            fitsKeyboard = null
-//        }
-        // TODO EMUI3NavigationBarObserver removeOnNavigationBarListener
-    }
+//    /**
+//     * 取消 软键盘监听 和 emui3.x导航栏监听
+//     */
+//    private fun cancelListener() {
+////        fitsKeyboard?.let {
+////            it.cancel()
+////            fitsKeyboard = null
+////        }
+//        // TODO EMUI3NavigationBarObserver removeOnNavigationBarListener
+//    }
 
     private fun setPadding(left: Int, top: Int, right: Int, bottom: Int) {
         contentView.setPadding(left, top, right, bottom)

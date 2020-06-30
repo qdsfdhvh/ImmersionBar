@@ -11,10 +11,43 @@ import androidx.annotation.RequiresApi
 import androidx.drawerlayout.widget.DrawerLayout
 import com.gyf.immersionbar.annotation.BarHide
 import com.gyf.immersionbar.util.checkFitsSystemWindows
+import java.util.*
+
+/**
+ * 代码待优化
+ */
+object FitsKeyboardManager {
+
+    private val backStack = ArrayDeque<FitsKeyboard>()
+
+    fun add(keyboard: FitsKeyboard?) {
+        if (keyboard == null) return
+        backStack.lastOrNull()?.let {
+            it.disable()
+            Log.d("ImmersionBar", "关闭FitsKeyboard ${it.bar}")
+        }
+        if (backStack.add(keyboard)) {
+            keyboard.enable()
+            Log.d("ImmersionBar", "开启FitsKeyboard ${keyboard.bar}")
+        }
+    }
+
+    fun pop(keyboard: FitsKeyboard?) {
+        if (keyboard == null || backStack.isEmpty()) return
+        backStack.removeLast().let {
+            it.disable()
+            Log.d("ImmersionBar", "关闭FitsKeyboard ${it.bar}")
+        }
+        backStack.lastOrNull()?.let {
+            it.enable()
+            Log.d("ImmersionBar", "开启FitsKeyboard ${it.bar}")
+        }
+    }
+}
 
 @RequiresApi(Build.VERSION_CODES.KITKAT)
 class FitsKeyboard(
-    private val bar: ImmersionBar
+    internal val bar: ImmersionBar
 ) : ViewTreeObserver.OnGlobalLayoutListener {
 
     private val window: Window = bar.window
@@ -52,8 +85,8 @@ class FitsKeyboard(
         paddingView = if (childView != null) childView!! else contentView
     }
 
-    fun enable(mode: Int) {
-        window.setSoftInputMode(mode)
+    fun enable() {
+        window.setSoftInputMode(bar.barConfig.keyboardMode)
         if (!isAddListener) {
             decorView.viewTreeObserver.addOnGlobalLayoutListener(this)
             isAddListener = true
