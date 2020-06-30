@@ -74,6 +74,9 @@ class MainActivity : BaseActivity(), DrawerListener {
     private var mMainData: ArrayList<FunBean>? = null
 
     private var propertiesHelper: PropertiesHelper? = null
+    private var fullscreen = false
+
+    override val layoutId: Int get() = R.layout.activity_main
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -87,8 +90,6 @@ class MainActivity : BaseActivity(), DrawerListener {
         drawer.removeDrawerListener(this)
         EventBus.getDefault().unregister(this)
     }
-
-    override val layoutId: Int get() = R.layout.activity_main
 
     override fun initImmersionBar() {
         super.initImmersionBar()
@@ -204,6 +205,37 @@ class MainActivity : BaseActivity(), DrawerListener {
                 26 -> {
                     immersionBar {
                         hideBar(BarHide.FLAG_SHOW_BAR)
+                    }
+                }
+                27 -> {
+                    if (hasNavigationBar) {
+                        immersionBar {
+                            if (fullscreen) {
+                                fullscreen = false
+                                fullScreen(fullscreen)
+                                navigationBarColor(getResColor(R.color.colorPrimary))
+                            } else {
+                                fullscreen = true
+                                fullScreen(fullscreen)
+                                transparentNavigationBar()
+                            }
+                        }
+                    } else {
+                        toast("当前设备没有导航栏或者导航栏已经被隐藏或者低于4.4系统")
+                    }
+                }
+                28 -> {
+                    if (isSupportStatusBarDarkFont) {
+                        immersionBar {
+                            statusBarDarkFont(true)
+                        }
+                    } else {
+                        toast("当前设备不支持状态栏字体变色")
+                    }
+                }
+                29 -> {
+                    immersionBar {
+                        statusBarDarkFont(false)
                     }
                 }
                 else -> {
