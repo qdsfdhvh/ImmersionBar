@@ -166,7 +166,7 @@ data class BarConfig(
         private var flymeOSStatusBarFontColor: Int = config?.flymeOSStatusBarFontColor ?: 0
         private var barHideCode: Int = config?.barHideCode ?: BarHide.FLAG_SHOW_BAR
         private var hideNavigationBar: Boolean = config?.hideNavigationBar ?: false
-        private var fits: Boolean = false
+        private var fits: Boolean = config?.fits ?: false
 //        private var fitsStatusBarType: Int = FitsFlag.DEFAULT
         private var contentColor: Int = config?.contentColor ?: Color.TRANSPARENT
         private var contentColorTransform: Int = config?.contentColorTransform ?: Color.BLACK
