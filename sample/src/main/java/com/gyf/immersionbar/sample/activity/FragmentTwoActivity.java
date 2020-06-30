@@ -1,6 +1,8 @@
 package com.gyf.immersionbar.sample.activity;
 
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Lifecycle;
+
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -29,6 +31,7 @@ public class FragmentTwoActivity extends BaseActivity implements View.OnClickLis
     LinearLayout llService;
     @BindView(R.id.ll_mine)
     LinearLayout llMine;
+
     private HomeTwoFragment homeTwoFragment;
     private CategoryTwoFragment categoryTwoFragment;
     private ServiceTwoFragment serviceTwoFragment;
@@ -87,6 +90,7 @@ public class FragmentTwoActivity extends BaseActivity implements View.OnClickLis
                     transaction.add(R.id.content, homeTwoFragment);
                 } else {
                     transaction.show(homeTwoFragment);
+                    transaction.setMaxLifecycle(homeTwoFragment, Lifecycle.State.RESUMED);
                 }
                 break;
             case 1:
@@ -95,6 +99,7 @@ public class FragmentTwoActivity extends BaseActivity implements View.OnClickLis
                     transaction.add(R.id.content, categoryTwoFragment);
                 } else {
                     transaction.show(categoryTwoFragment);
+                    transaction.setMaxLifecycle(categoryTwoFragment, Lifecycle.State.RESUMED);
                 }
                 break;
             case 2:
@@ -103,6 +108,7 @@ public class FragmentTwoActivity extends BaseActivity implements View.OnClickLis
                     transaction.add(R.id.content, serviceTwoFragment);
                 } else {
                     transaction.show(serviceTwoFragment);
+                    transaction.setMaxLifecycle(serviceTwoFragment, Lifecycle.State.RESUMED);
                 }
                 break;
             case 3:
@@ -111,6 +117,7 @@ public class FragmentTwoActivity extends BaseActivity implements View.OnClickLis
                     transaction.add(R.id.content, mineTwoFragment);
                 } else {
                     transaction.show(mineTwoFragment);
+                    transaction.setMaxLifecycle(mineTwoFragment, Lifecycle.State.RESUMED);
                 }
                 break;
             default:
@@ -122,15 +129,19 @@ public class FragmentTwoActivity extends BaseActivity implements View.OnClickLis
     private void hideFragment(FragmentTransaction transaction) {
         if (homeTwoFragment != null) {
             transaction.hide(homeTwoFragment);
+            transaction.setMaxLifecycle(homeTwoFragment, Lifecycle.State.CREATED);
         }
         if (categoryTwoFragment != null) {
             transaction.hide(categoryTwoFragment);
+            transaction.setMaxLifecycle(categoryTwoFragment, Lifecycle.State.CREATED);
         }
         if (serviceTwoFragment != null) {
             transaction.hide(serviceTwoFragment);
+            transaction.setMaxLifecycle(serviceTwoFragment, Lifecycle.State.CREATED);
         }
         if (mineTwoFragment != null) {
             transaction.hide(mineTwoFragment);
+            transaction.setMaxLifecycle(mineTwoFragment, Lifecycle.State.CREATED);
         }
     }
 

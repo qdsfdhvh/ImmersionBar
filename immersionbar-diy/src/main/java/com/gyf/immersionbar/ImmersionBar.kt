@@ -369,6 +369,11 @@ class ImmersionBar(
                 Log.d("ImmersionBar", "创建FitsKeyboard $this")
                 fitsKeyboard = FitsKeyboard(this)
             }
+        } else {
+            fitsKeyboard?.let {
+                FitsKeyboardManager.pop(it)
+                fitsKeyboard = null
+            }
         }
 //            fitsKeyboard!!.enable(barConfig.keyboardMode)
 //        } else {

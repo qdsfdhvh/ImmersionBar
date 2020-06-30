@@ -9,7 +9,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import butterknife.ButterKnife
 import butterknife.Unbinder
-import com.gyf.immersionbar.immersionBar
 import com.gyf.immersionbar.sample.R
 import com.gyf.immersionbar.setStatusBarView
 import com.gyf.immersionbar.setTitleBar
@@ -47,8 +46,10 @@ abstract class BaseImmersionFragment : Fragment() {
         initImmersionBar()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
+        toolbar = null
+        statusBarView = null
         binder.unbind()
     }
 
@@ -67,11 +68,7 @@ abstract class BaseImmersionFragment : Fragment() {
      */
     protected abstract val layoutId: Int
 
-    protected open fun initImmersionBar() {
-//        immersionBar {
-//            keyboardEnable(true)
-//        }
-    }
+    protected open fun initImmersionBar() {}
 
     /**
      * 初始化数据
