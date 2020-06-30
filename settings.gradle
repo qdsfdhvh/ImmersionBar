@@ -1,2 +1,2 @@
 include ':immersionbar-diy'
-include ':immersionbar', ':immersionbar-ktx', ':immersionbar-components', ':sample'
+include ':sample'
