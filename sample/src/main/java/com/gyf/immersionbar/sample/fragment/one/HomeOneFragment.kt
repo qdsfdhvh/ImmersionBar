@@ -80,7 +80,7 @@ class HomeOneFragment : BaseImmersionFragment() {
 
     private fun addHeaderView() {
         if (mImages.isNotEmpty()) {
-            val headView = LayoutInflater.from(requireActivity()).inflate(R.layout.item_banner, mRv!!.parent as ViewGroup, false)
+            val headView = LayoutInflater.from(requireActivity()).inflate(R.layout.item_banner, mRv.parent as ViewGroup, false)
             val banner: Banner = headView.findViewById(R.id.banner)
             banner.setImages(mImages)
                 .setImageLoader(GlideImageLoader())

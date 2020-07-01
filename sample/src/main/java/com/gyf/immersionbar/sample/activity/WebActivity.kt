@@ -45,7 +45,7 @@ class WebActivity : BaseActivity() {
             // 退出时调用此方法，移除绑定的服务，否则某些特定系统会报错
             mWebView.settings.javaScriptEnabled = false
             mWebView.clearHistory()
-            mWebView.clearView()
+            mWebView.loadUrl("about:blank")
             mWebView.removeAllViews()
             mWebView.destroy()
         } catch (ignored: Exception) {

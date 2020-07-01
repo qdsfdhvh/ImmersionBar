@@ -570,8 +570,8 @@ data class BarConfig(
          */
         fun navigationBarWithEMUI3Enable(enable: Boolean): Builder {
             if (isEMUI3x()) {
-                navigationBarWithEMUI3Enable = true
-                navigationBarWithKitkatEnable = true
+                navigationBarWithEMUI3Enable = enable
+                navigationBarWithKitkatEnable = enable
             }
             return this
         }

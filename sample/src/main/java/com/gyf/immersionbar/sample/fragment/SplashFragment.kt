@@ -2,11 +2,9 @@ package com.gyf.immersionbar.sample.fragment
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import butterknife.BindView
-import com.gyf.immersionbar.ImmersionBar
 import com.gyf.immersionbar.sample.OnSplashListener
 import com.gyf.immersionbar.sample.R
 import com.gyf.immersionbar.sample.utils.GlideUtils
@@ -65,7 +63,7 @@ class SplashFragment : BaseFragment(), Observer<Long> {
 
     override fun setListener() {
         super.setListener()
-        tvTime!!.setOnClickListener { v: View? ->
+        tvTime.setOnClickListener {
             if (mOnSplashListener != null) {
                 mOnSplashListener!!.onTime(0, mTotalTime)
             }

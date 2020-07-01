@@ -64,6 +64,6 @@ class CoordinatorActivity : BaseActivity() {
             Snackbar.make(it, "我是Snackbar", Snackbar.LENGTH_LONG).show()
         }
         //toolbar返回按钮监听
-        toolbar.setNavigationOnClickListener { v: View? -> finish() }
+        toolbar.setNavigationOnClickListener { finish() }
     }
 }

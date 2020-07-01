@@ -146,7 +146,9 @@ class FragmentThreeActivity : BaseActivity(), View.OnClickListener, OnPageChange
         linearLayout!!.isSelected = true
     }
 
-    private inner class MyAdapter internal constructor(fm: FragmentManager?) : FragmentPagerAdapter(fm!!) {
+    private inner class MyAdapter (
+        fm: FragmentManager
+    ) : FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
         override fun getItem(position: Int): Fragment {
             return mFragments[position]
         }

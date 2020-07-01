@@ -107,7 +107,7 @@ class ParamsActivity : BaseActivity() {
     @SuppressLint("SetTextI18n")
     override fun setListener() {
         super.setListener()
-        mBtnStatus.setOnClickListener { v: View? ->
+        mBtnStatus.setOnClickListener {
             mIsHideStatusBar = if (!mIsHideStatusBar) {
                 hideStatusBar()
                 true
@@ -116,7 +116,7 @@ class ParamsActivity : BaseActivity() {
                 false
             }
         }
-        ViewCompat.setOnApplyWindowInsetsListener(mTvInsets) { view: View?, windowInsetsCompat: WindowInsetsCompat ->
+        ViewCompat.setOnApplyWindowInsetsListener(mTvInsets) { _: View?, windowInsetsCompat: WindowInsetsCompat ->
             mTvInsets.text = getText(getTitle(mTvInsets) + windowInsetsCompat.systemWindowInsetTop)
             windowInsetsCompat.consumeSystemWindowInsets()
         }

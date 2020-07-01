@@ -151,7 +151,7 @@ class MainActivity : BaseActivity(), DrawerListener {
                 }
             }
         })
-        mMainAdapter.setOnItemClickListener { adapter: BaseQuickAdapter<*, *>, view: View?, position: Int ->
+        mMainAdapter.setOnItemClickListener { adapter: BaseQuickAdapter<*, *>, _: View?, position: Int ->
             val funBean = adapter.data[position] as FunBean
             var intent: Intent? = null
             when (position) {
@@ -292,11 +292,13 @@ class MainActivity : BaseActivity(), DrawerListener {
                 .add(R.id.fl_content, mSplashFragment, SplashFragment::class.java.simpleName)
                 .commitAllowingStateLoss()
         }
-        mSplashFragment.setOnSplashListener(OnSplashListener { time, _ ->
-            if (time != 0L) {
-                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-            } else {
-                drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+        mSplashFragment.setOnSplashListener(object : OnSplashListener {
+            override fun onTime(time: Long, totalTime: Long) {
+                if (time != 0L) {
+                    drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+                } else {
+                    drawer.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+                }
             }
         })
     }
