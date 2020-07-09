@@ -1,7 +1,6 @@
 package com.seiko.immersionbar
 
 import android.app.Dialog
-import android.util.Log
 import android.util.SparseArray
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -136,25 +135,7 @@ fun Fragment.barConfig(tag: Int = barTag): BarConfig? {
     return viewModel.get(tag)?.barConfig ?: requireActivity().barConfig()
 }
 
-fun FragmentActivity.barScope(
-    creator: () -> ImmersionBar,
-    onCreated: (ImmersionBar) -> Unit,
-    onUpdate: (ImmersionBar) -> Unit,
-    tag: Int = barTag
-): ImmersionBar {
-    val viewModel = getImmersionBarViewModel()
-    var bar = viewModel.get(tag)
-    if (bar == null) {
-        bar = creator()
-        viewModel.put(tag, bar)
-        onCreated(bar)
-    } else {
-        onUpdate(bar)
-    }
-    return bar
-}
-
-fun Fragment.barScope(
+fun ViewModelStoreOwner.barScope(
     creator: () -> ImmersionBar,
     onCreated: (ImmersionBar) -> Unit,
     onUpdate: (ImmersionBar) -> Unit,
