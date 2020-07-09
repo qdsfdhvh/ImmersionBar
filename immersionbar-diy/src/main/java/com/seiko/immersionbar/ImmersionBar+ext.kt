@@ -109,20 +109,3 @@ fun Fragment.setTitleBarMarginTop(vararg views: View) = setTitleBarMarginTop(req
  */
 fun Activity.setStatusBarView(view: View) = setStatusBarView(getStatusBarHeight(), view)
 fun Fragment.setStatusBarView(view: View) = setStatusBarView(requireActivity().getStatusBarHeight(), view)
-
-///**
-// * 根布局设置setFitsSystemWindows
-// */
-//fun Activity.setFitsSystemWindows(applySystemFits: Boolean) {
-//    setFitsSystemWindows(
-//        getContentView().getChildAt(0),
-//        applySystemFits
-//    )
-//}
-//
-///**
-// * 根布局设置setFitsSystemWindows
-// */
-//fun Fragment.setFitsSystemWindows(applySystemFits: Boolean) {
-//    requireActivity().setFitsSystemWindows(applySystemFits)
-//}

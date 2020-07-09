@@ -120,12 +120,6 @@ class FitsKeyboard(
             tempKeyboardHeight = keyboardHeight
             if (checkFitsSystemWindows(contentView)) {
                 if (childView != null) {
-//                    if (bar.barConfig.isSupportActionBar) {
-//                        keyboardHeight += barSize.actionBarHeight + barSize.statusBarHeight
-//                    }
-//                    if (bar.barConfig.fits) {
-//                        keyboardHeight += barSize.statusBarHeight
-//                    }
                     if (keyboardHeight > navigationBarHeight) {
                         bottom = keyboardHeight + paddingBottom
                         isPopup = true

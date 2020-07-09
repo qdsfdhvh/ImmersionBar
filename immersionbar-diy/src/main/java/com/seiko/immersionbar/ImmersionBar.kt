@@ -35,7 +35,6 @@ class ImmersionBar(
     /**
      * 软键盘适配
      */
-//    private var keyboardTempEnable: Boolean = false
     private var fitsKeyboard: FitsKeyboard? = null
 
     /**
@@ -74,6 +73,8 @@ class ImmersionBar(
         if (isEMUI3x() && barConfig.navigationBarWithEMUI3Enable) {
             onCreate()
         }
+        // 尝试自动调整深色亮色模式参数
+        barConfig.adjustDarkModeParams()
         // 适配软键盘与底部输入冲突问题
         fitsKeyboard()
         // 设置沉浸式
@@ -94,15 +95,6 @@ class ImmersionBar(
         if (isResumed) {
             onPause()
         }
-//        cancelListener()
-//        if (isDialog) {
-//            parent?.let {
-//                it.barConfig.keyboardEnable = barConfig.keyboardEnable
-//                if (it.barConfig.barHideCode != BarHide.FLAG_SHOW_BAR) {
-//                    it.setBar()
-//                }
-//            }
-//        }
         isCreated = false
     }
 
@@ -110,23 +102,8 @@ class ImmersionBar(
      * 更新Bar的参数
      */
     private fun updateBarParams() {
-        // 尝试自动调整深色亮色模式参数
-        barConfig.adjustDarkModeParams()
         // 更新BarSize
         updateBarConfig()
-//        parent?.let {
-//            // 如果在Fragment中使用，让Activity同步Fragment的BarParams参数
-//            if (isFragment) {
-//                it.barConfig = barConfig
-//            }
-//            // 如果dialog里设置了keyboardEnable为true，
-//            // 则Activity中所设置的keyboardEnable为false
-//            if (isDialog) {
-//                if (it.keyboardTempEnable) {
-//                    it.barConfig.keyboardEnable = false
-//                }
-//            }
-//        }
     }
 
     /**
@@ -258,24 +235,18 @@ class ImmersionBar(
             // android 5.0以下解决状态栏和布局重叠问题
             fitsWindowsBelowLOLLIPOP()
         }
-        // 适配状态栏与布局重叠问题
-//        fitsLayoutOverlap()
     }
 
     /**
      * android 5.0以上解决状态栏和布局重叠问题
      */
     private fun fitsWindowsAboveLOLLIPOP() {
-//        updateBarConfig()
         if (checkFitsSystemWindows(contentView)) {
             setPadding(0, 0, 0, 0)
             return
         }
 
         var top = 0
-//        if (barConfig.fits && barConfig.fitsStatusBarType == FitsFlag.SYSTEM_WINDOWS) {
-//            top = barSize.statusBarHeight
-//        }
         if (barConfig.fits) {
             top = barSize.statusBarHeight
         }
@@ -299,14 +270,9 @@ class ImmersionBar(
     }
 
     private fun postFitsWindowsBelowLOLLIPOP() {
-//        updateBarConfig()
         // 解决android4.4有导航栏的情况下，
         // activity底部被导航栏遮挡的问题和android 5.0以下解决状态栏和布局重叠问题
         fitsWindowsKITKAT()
-        // 解决华为emui3.1或者3.0导航栏手动隐藏的问题
-        if (isEMUI3x()) {
-            fitsWindowsEMUI()
-        }
     }
 
     /**
@@ -319,9 +285,6 @@ class ImmersionBar(
             return
         }
         var top = 0; var right = 0; var bottom = 0
-//        if (barConfig.fits && barConfig.fitsStatusBarType == FitsFlag.SYSTEM_WINDOWS) {
-//            top = barSize.statusBarHeight
-//        }
         if (barConfig.fits) {
             top = barSize.statusBarHeight
         }
@@ -353,18 +316,6 @@ class ImmersionBar(
     }
 
     /**
-     * 注册emui3.x导航栏监听函数
-     */
-    private fun fitsWindowsEMUI() {
-//        val navigationBarView = decorView.findViewWithTag<View>(IMMERSION_ID_NAVIGATION_BAR_VIEW)
-//        if (barConfig.navigationBarEnable && barConfig.navigationBarWithKitkatEnable) {
-//            if (navigationBarView != null) {
-//
-//            }
-//        }
-    }
-
-    /**
      * 解决底部输入框与软键盘问题
      */
     private fun fitsKeyboard() {
@@ -380,18 +331,6 @@ class ImmersionBar(
                 fitsKeyboard = null
             }
         }
-//            fitsKeyboard!!.enable(barConfig.keyboardMode)
-//        } else {
-//            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
-//        }
-//        if (barConfig.keyboardEnable) {
-//            if (fitsKeyboard == null) {
-//                fitsKeyboard = FitsKeyboard(this)
-//            }
-//            fitsKeyboard!!.enable(barConfig.keyboardMode)
-//        } else {
-//            fitsKeyboard?.disable()
-//        }
     }
 
     /**
@@ -405,17 +344,6 @@ class ImmersionBar(
             view.setBackgroundColor(barConfig.createTransformColor(pair))
         }
     }
-
-//    /**
-//     * 取消 软键盘监听 和 emui3.x导航栏监听
-//     */
-//    private fun cancelListener() {
-////        fitsKeyboard?.let {
-////            it.cancel()
-////            fitsKeyboard = null
-////        }
-//        // TODO EMUI3NavigationBarObserver removeOnNavigationBarListener
-//    }
 
     private fun setPadding(left: Int, top: Int, right: Int, bottom: Int) {
         contentView.setPadding(left, top, right, bottom)

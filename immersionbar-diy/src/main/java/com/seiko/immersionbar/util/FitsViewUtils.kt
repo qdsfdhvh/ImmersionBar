@@ -24,20 +24,3 @@ internal fun checkFitsSystemWindows(view: View): Boolean {
     }
     return false
 }
-
-///**
-// * 部件根节点设置fitsSystemWindows
-// */
-//internal fun setFitsSystemWindows(view: View?, applySystemFits: Boolean) {
-//    if (view == null) return
-//    if (view is ViewGroup) {
-//        if (view is DrawerLayout) {
-//            setFitsSystemWindows(view.getChildAt(0), applySystemFits)
-//        } else {
-//            view.fitsSystemWindows = applySystemFits
-//            view.clipToPadding = true
-//        }
-//    } else {
-//        view.fitsSystemWindows = applySystemFits
-//    }
-//}
