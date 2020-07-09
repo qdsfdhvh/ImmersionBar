@@ -30,7 +30,11 @@ fun Dialog.immersionBar(
     builder: BarConfig.Builder.() -> Unit
 ): ImmersionBar {
     return activity.barScope(
-        creator = { ImmersionBar(activity, builder, window!!) },
+        creator = {
+            val parentBarConfig = activity.barConfig()
+            val barConfig = BarConfig.Builder(parentBarConfig).apply(builder).build()
+            ImmersionBar(activity, barConfig, window!!)
+        },
         onCreated = { it.bindLifecycle(activity.lifecycle) },
         onUpdate = { it.update(builder) },
         tag = this.barTag
@@ -42,7 +46,11 @@ fun Dialog.immersionBar(
     builder: BarConfig.Builder.() -> Unit
 ): ImmersionBar {
     return fragment.barScope(
-        creator = { ImmersionBar(fragment.requireActivity(), builder, window!!) },
+        creator = {
+            val parentBarConfig = fragment.barConfig()
+            val barConfig = BarConfig.Builder(parentBarConfig).apply(builder).build()
+            ImmersionBar(fragment.requireActivity(), barConfig, window!!)
+        },
         onCreated = { it.bindLifecycle(fragment.lifecycle) },
         onUpdate = { it.update(builder) },
         tag = this.barTag
@@ -54,7 +62,11 @@ fun Dialog.immersionBar(
  */
 fun DialogFragment.immersionBar(builder: BarConfig.Builder.() -> Unit = {}): ImmersionBar {
     return barScope(
-        creator = { ImmersionBar(requireActivity(), builder, requireDialog().window!!) },
+        creator = {
+            val parentBarConfig = parentFragment?.barConfig()
+            val barConfig = BarConfig.Builder(parentBarConfig).apply(builder).build()
+            ImmersionBar(requireActivity(), barConfig, requireDialog().window!!)
+        },
         onCreated = { it.bindLifecycle(lifecycle) },
         onUpdate = { it.update(builder) }
     )
@@ -65,7 +77,7 @@ fun DialogFragment.immersionBar(builder: BarConfig.Builder.() -> Unit = {}): Imm
  */
 fun Fragment.immersionBar(builder: BarConfig.Builder.() -> Unit = {}): ImmersionBar {
     return barScope(
-        creator = { ImmersionBar(requireActivity(),builder) },
+        creator = { ImmersionBar(requireActivity(), builder) },
         onCreated = { it.bindLifecycle(lifecycle) },
         onUpdate = { it.update(builder) }
     )
@@ -108,6 +120,22 @@ fun ImmersionBar.bindLifecycle(lifecycle: Lifecycle) {
     })
 }
 
+/**
+ * 尝试获取配置FragmentActivity的BarConfig配置
+ */
+fun FragmentActivity.barConfig(tag: Int = barTag): BarConfig? {
+    val viewModel = getImmersionBarViewModel()
+    return viewModel.get(tag)?.barConfig
+}
+
+/**
+ * 尝试获取配置Fragment的BarConfig配置
+ */
+fun Fragment.barConfig(tag: Int = barTag): BarConfig? {
+    val viewModel = getImmersionBarViewModel()
+    return viewModel.get(tag)?.barConfig ?: requireActivity().barConfig()
+}
+
 fun FragmentActivity.barScope(
     creator: () -> ImmersionBar,
     onCreated: (ImmersionBar) -> Unit,
@@ -144,7 +172,7 @@ fun Fragment.barScope(
     return bar
 }
 
-private fun ViewModelStoreOwner.getImmersionBarViewModel(): ImmersionBarViewModel {
+fun ViewModelStoreOwner.getImmersionBarViewModel(): ImmersionBarViewModel {
     return ViewModelProvider(this, factory)
         .get(ImmersionBarViewModel::class.java)
 }
@@ -161,17 +189,13 @@ private val factory by lazy {
     }
 }
 
-private class ImmersionBarViewModel : ViewModel() {
+class ImmersionBarViewModel : ViewModel() {
 
     private val map = SparseArray<ImmersionBar>()
 
-    fun put(key: Int, bar: ImmersionBar) {
-        map.put(key, bar)
-    }
+    fun put(key: Int, bar: ImmersionBar) = map.put(key, bar)
 
-    fun get(key: Int): ImmersionBar? {
-        return map[key]
-    }
+    fun get(key: Int): ImmersionBar? = map[key]
 
     fun remove(key: Int) {
         map[key]?.onDestroy()
@@ -179,7 +203,6 @@ private class ImmersionBarViewModel : ViewModel() {
     }
 
     override fun onCleared() {
-        Log.d("ImmersionBarViewModel", "onCleared size = ${map.size()}")
         for (i in 0 until map.size()) {
             map.valueAt(i).onDestroy()
         }

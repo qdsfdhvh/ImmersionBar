@@ -14,14 +14,15 @@ import com.seiko.immersionbar.util.*
 
 class ImmersionBar(
     private val activity: FragmentActivity,
-    builder: BarConfig.Builder.() -> Unit,
+    internal var barConfig: BarConfig,
     internal val window: Window = activity.window
 ) {
 
-    /**
-     * Bar配置
-     */
-    internal var barConfig = BarConfig.Builder().apply(builder).build()
+    constructor(
+        activity: FragmentActivity,
+        builder: BarConfig.Builder.() -> Unit,
+        window: Window = activity.window
+    ) : this(activity, BarConfig.Builder().apply(builder).build(), window)
 
     /**
      * Bar尺寸
