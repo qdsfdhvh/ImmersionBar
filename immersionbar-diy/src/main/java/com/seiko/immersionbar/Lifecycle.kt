@@ -26,7 +26,7 @@ fun Dialog.destroyBar(fragment: Fragment) {
  */
 fun Dialog.immersionBar(
     activity: FragmentActivity,
-    builder: BarConfig.Builder.() -> Unit
+    builder: BarConfig.Builder.() -> Unit = {}
 ): ImmersionBar {
     return activity.barScope(
         creator = {
@@ -42,7 +42,7 @@ fun Dialog.immersionBar(
 
 fun Dialog.immersionBar(
     fragment: Fragment,
-    builder: BarConfig.Builder.() -> Unit
+    builder: BarConfig.Builder.() -> Unit = {}
 ): ImmersionBar {
     return fragment.barScope(
         creator = {

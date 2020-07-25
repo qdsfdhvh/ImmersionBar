@@ -82,46 +82,48 @@ class DialogActivity : BaseActivity(), DialogInterface.OnDismissListener {
     fun onClick(view: View) {
         //弹出Dialog
         val builder = AlertDialog.Builder(this, R.style.MyDialog)
-        mAlertDialog = builder.create()
-        mAlertDialog!!.setOnDismissListener(this)
-        mAlertDialog!!.show()
+        val dialog = builder.create()
+        dialog.setOnDismissListener(this)
+        dialog.show()
+
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog, null)
         val toolbar: Toolbar = dialogView.findViewById(R.id.toolbar)
         val iv = dialogView.findViewById<ImageView>(R.id.mIv)
+
         Glide.with(this).asBitmap().load(Utils.getPic())
             .apply(RequestOptions().placeholder(R.mipmap.test))
             .into(iv)
-        mAlertDialog!!.setContentView(dialogView)
-        mDialogWindow = mAlertDialog!!.window
-        if (mDialogWindow != null) {
-            //解决无法弹出输入法的问题
-            mDialogWindow!!.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+
+        dialog.setContentView(dialogView)
+        val dialogWindow = dialog.window
+        //解决无法弹出输入法的问题
+        dialogWindow?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                 WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM)
-        }
+
         //计算屏幕宽高
         val widthAndHeight = Utils.getWidthAndHeight(window)
-        if (mDialogWindow != null) {
+        if (dialogWindow != null) {
             mId = view.id
             when (view.id) {
                 R.id.btn_full -> {
-                    mDialogWindow!!.setGravity(Gravity.TOP)
-                    mDialogWindow!!.setWindowAnimations(R.style.RightAnimation)
-                    mDialogWindow!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+                    dialogWindow.setGravity(Gravity.TOP)
+                    dialogWindow.setWindowAnimations(R.style.RightAnimation)
+                    dialogWindow.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
 
                     setTitleBar(toolbar)
-                    mAlertDialog!!.immersionBar(this) {
+                    dialog.immersionBar(this) {
                         navigationBarColor(getResColor(R.color.btn3))
                         statusBarDarkFont(true)
                         keyboardEnable(true)
                     }
                 }
                 R.id.btn_top -> {
-                    mDialogWindow!!.setGravity(Gravity.TOP)
-                    mDialogWindow!!.setWindowAnimations(R.style.TopAnimation)
-                    mDialogWindow!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, widthAndHeight[1] / 2)
+                    dialogWindow.setGravity(Gravity.TOP)
+                    dialogWindow.setWindowAnimations(R.style.TopAnimation)
+                    dialogWindow.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, widthAndHeight[1] / 2)
 
                     setTitleBar(toolbar)
-                    mAlertDialog!!.immersionBar(this) {
+                    dialog.immersionBar(this) {
                         navigationBarWithKitkatEnable(
                             resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
                         navigationBarColor(getResColor(R.color.btn4))
@@ -129,21 +131,21 @@ class DialogActivity : BaseActivity(), DialogInterface.OnDismissListener {
                     }
                 }
                 R.id.btn_bottom -> {
-                    mDialogWindow!!.setGravity(Gravity.BOTTOM)
-                    mDialogWindow!!.setWindowAnimations(R.style.BottomAnimation)
-                    mDialogWindow!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, widthAndHeight[1] / 2)
+                    dialogWindow.setGravity(Gravity.BOTTOM)
+                    dialogWindow.setWindowAnimations(R.style.BottomAnimation)
+                    dialogWindow.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, widthAndHeight[1] / 2)
 
-                    mAlertDialog!!.immersionBar(this) {
+                    dialog.immersionBar(this) {
                         navigationBarColor(getResColor(R.color.cool_green_normal))
                     }
                 }
                 R.id.btn_left -> {
-                    mDialogWindow!!.setGravity(Gravity.TOP or Gravity.START)
-                    mDialogWindow!!.setWindowAnimations(R.style.LeftAnimation)
-                    mDialogWindow!!.setLayout(widthAndHeight[0] / 2, ViewGroup.LayoutParams.MATCH_PARENT)
+                    dialogWindow.setGravity(Gravity.TOP or Gravity.START)
+                    dialogWindow.setWindowAnimations(R.style.LeftAnimation)
+                    dialogWindow.setLayout(widthAndHeight[0] / 2, ViewGroup.LayoutParams.MATCH_PARENT)
 
                     setTitleBar(toolbar)
-                    mAlertDialog!!.immersionBar(this) {
+                    dialog.immersionBar(this) {
                         navigationBarWithKitkatEnable(
                             resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
                         navigationBarColor(getResColor(R.color.btn11))
@@ -151,36 +153,39 @@ class DialogActivity : BaseActivity(), DialogInterface.OnDismissListener {
                     }
                 }
                 R.id.btn_right -> {
-                    mDialogWindow!!.setGravity(Gravity.TOP or Gravity.END)
-                    mDialogWindow!!.setWindowAnimations(R.style.RightAnimation)
-                    mDialogWindow!!.setLayout(widthAndHeight[0] / 2, ViewGroup.LayoutParams.MATCH_PARENT)
+                    dialogWindow.setGravity(Gravity.TOP or Gravity.END)
+                    dialogWindow.setWindowAnimations(R.style.RightAnimation)
+                    dialogWindow.setLayout(widthAndHeight[0] / 2, ViewGroup.LayoutParams.MATCH_PARENT)
 
                     setTitleBar(toolbar)
-                    mAlertDialog!!.immersionBar(this) {
+                    dialog.immersionBar(this) {
                         navigationBarColor(getResColor(R.color.btn8))
                         keyboardEnable(true)
                     }
                 }
             }
         }
+        mAlertDialog = dialog
+        mDialogWindow = dialogWindow
     }
 
     override fun onDismiss(dialog: DialogInterface) {
         AppManager.getInstance().hideSoftKeyBoard(this)
-        mAlertDialog?.setOnDismissListener(null)
-        mAlertDialog?.destroyBar(this)
+        mAlertDialog?.let {
+            it.setOnDismissListener(null)
+            it.destroyBar(this)
+        }
     }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         val widthAndHeight = Utils.getWidthAndHeight(window)
-        if (mAlertDialog != null) {
-            when (mId) {
-                R.id.btn_top -> mDialogWindow!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, widthAndHeight[1] / 2)
-                R.id.btn_bottom -> mDialogWindow!!.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, widthAndHeight[1] / 2)
-                R.id.btn_left -> mDialogWindow!!.setLayout(widthAndHeight[0] / 2, ViewGroup.LayoutParams.MATCH_PARENT)
-                R.id.btn_right -> mDialogWindow!!.setLayout(widthAndHeight[0] / 2, ViewGroup.LayoutParams.MATCH_PARENT)
-            }
+        val dialogWindow = mDialogWindow ?: return
+        when (mId) {
+            R.id.btn_top -> dialogWindow.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, widthAndHeight[1] / 2)
+            R.id.btn_bottom -> dialogWindow.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, widthAndHeight[1] / 2)
+            R.id.btn_left -> dialogWindow.setLayout(widthAndHeight[0] / 2, ViewGroup.LayoutParams.MATCH_PARENT)
+            R.id.btn_right -> dialogWindow.setLayout(widthAndHeight[0] / 2, ViewGroup.LayoutParams.MATCH_PARENT)
         }
     }
 }
