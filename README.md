@@ -1,6 +1,6 @@
 # ImmersionBar
 
-[![version](https://api.bintray.com/packages/qdsfdhvh/maven/Immersionbar/images/download.svg)](https://bintray.com/qdsfdhvh/maven/Immersionbar)
+[![](https://jitpack.io/v/qdsfdhvh/immersionbar.svg)](https://jitpack.io/#qdsfdhvh/immersionbar)
 
 [Powered by ImmersionBar](https://github.com/gyf-dev/ImmersionBar)
 
@@ -9,5 +9,12 @@
 > android studio
 
 ```groovy
-implementation 'com.seiko.immersionbar:immersionbar-diy:0.0.2'
+allprojects {
+    repositories {
+        ...
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+implementation 'com.github.qdsfdhvh:immersionbar:1.0.0'
 ```
